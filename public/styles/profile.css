@@ -5,9 +5,9 @@
 }
 
 .container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .avatar-wrapper {
@@ -18,7 +18,7 @@
   margin-bottom: 1rem;
   width: 130px;
   height: 130px;
-  background-color: #efefef; 
+  background-color: #efefef;
   border-radius: 50%;
   overflow: hidden;
 }
@@ -58,14 +58,13 @@
 }
 
 h1 {
-    font-family: Inter;
-font-weight: 600;
-font-size: 16px;
-line-height: 16px;
-text-align: center;
-color: rgba(30, 30, 30, 1);
-margin: 30px;
-
+  font-family: Inter;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 16px;
+  text-align: center;
+  color: rgba(30, 30, 30, 1);
+  margin: 30px;
 }
 
 .profile-info {
@@ -76,7 +75,6 @@ margin: 30px;
 }
 
 .profile-info li {
-  
   font-size: 1.1rem;
   display: flex;
   justify-content: space-between;
@@ -99,11 +97,11 @@ margin: 30px;
   text-align: left;
   padding: 0;
   font-family: Inter;
-font-weight: 500;
-font-size: 13px;
-line-height: 13px;
-border-bottom: 1px solid rgba(234, 234, 234, 1);
-height: 30px;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 13px;
+  border-bottom: 1px solid rgba(234, 234, 234, 1);
+  height: 30px;
 }
 
 .btn.logout {
@@ -112,30 +110,28 @@ height: 30px;
   border-bottom: none;
 }
 
-
 strong {
-    font-family: Inter;
-font-weight: 500;
-font-size: 13px;
-line-height: 13px;
+  font-family: Inter;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 13px;
 }
 
 p {
-    font-family: Inter;
-font-weight: 500;
-font-size: 13px;
-line-height: 13px;
-text-align: right;
-color: rgba(153, 153, 153, 1);
-
+  font-family: Inter;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 13px;
+  text-align: right;
+  color: rgba(153, 153, 153, 1);
 }
 
 li {
-    border-bottom: 1px solid rgba(234, 234, 234, 1);
+  border-bottom: 1px solid rgba(234, 234, 234, 1);
 }
 
 .last-li {
-border-bottom: none;
+  border-bottom: none;
 }
 
 .back {

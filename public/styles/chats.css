@@ -17,14 +17,14 @@
 }
 
 .back {
-    text-align: right;
-    font-family: Inter;
-font-weight: 500;
-font-size: 12px;
-line-height: 12px;
-color: rgba(153, 153, 153, 1);
-margin: 20px 10px 0 0;
-text-decoration: none;
+  text-align: right;
+  font-family: Inter;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 12px;
+  color: rgba(153, 153, 153, 1);
+  margin: 20px 10px 0 0;
+  text-decoration: none;
 }
 
 .chat-search-wrapper {
@@ -73,18 +73,17 @@ text-decoration: none;
 
 .chat-name {
   font-family: Inter;
-font-weight: 600;
-font-size: 13px;
-line-height: 13px;
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 13px;
 }
 
 .chat-last {
   font-family: Inter;
-font-weight: 500;
-font-size: 12px;
-line-height: 15px;
-color: rgba(153, 153, 153, 1);
-
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 15px;
+  color: rgba(153, 153, 153, 1);
 }
 
 .chat-window {
@@ -95,20 +94,20 @@ color: rgba(153, 153, 153, 1);
 }
 
 .chat-header-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 20px;
 }
 
 .chat-header-container-left {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
 
 .icon-button {
-background-color: transparent;
-    border: none;
+  background-color: transparent;
+  border: none;
 }
 
 .chat-header {
@@ -118,7 +117,7 @@ background-color: transparent;
 }
 
 .avatar-placeholder-small {
-    width: 34px;
+  width: 34px;
   height: 34px;
   background-color: rgba(239, 239, 239, 1);
   border-radius: 50%;
@@ -167,10 +166,10 @@ background-color: transparent;
 
 .chat-time {
   font-family: Inter;
-font-weight: 500;
-font-size: 9px;
-line-height: 13px;
-text-align: right;
+  font-weight: 500;
+  font-size: 9px;
+  line-height: 13px;
+  text-align: right;
 
   color: rgba(153, 153, 153, 1);
 }
@@ -191,12 +190,12 @@ text-align: right;
 }
 
 .date {
-    font-family: Inter;
-font-weight: 500;
-font-size: 12px;
-line-height: 12px;
-text-align: center;
-color: rgba(153, 153, 153, 1);
+  font-family: Inter;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 12px;
+  text-align: center;
+  color: rgba(153, 153, 153, 1);
 }
 
 .messages {
@@ -213,7 +212,7 @@ color: rgba(153, 153, 153, 1);
 }
 
 .message {
-    position: relative;
+  position: relative;
   max-width: 60%;
   width: fit-content;
   padding: 0.5rem 0.75rem;
@@ -242,7 +241,7 @@ color: rgba(153, 153, 153, 1);
   background: rgba(228, 237, 253, 1);
   align-self: flex-end;
   margin-left: auto;
-  border-radius: 10px 10px 0  10px;
+  border-radius: 10px 10px 0 10px;
 }
 
 .tick {
@@ -251,9 +250,9 @@ color: rgba(153, 153, 153, 1);
 
 form {
   display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 0 20px;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 20px;
 }
 
 form input {
@@ -263,7 +262,7 @@ form input {
   border-radius: 20px;
   margin-right: 20px;
   background-color: rgba(239, 239, 239, 1);
-    color: rgba(153, 153, 153, 1);
+  color: rgba(153, 153, 153, 1);
 }
 
 form button {
@@ -276,7 +275,6 @@ form button {
 }
 
 .add-button {
-    background-color: transparent;
-    border: none;
-
+  background-color: transparent;
+  border: none;
 }
