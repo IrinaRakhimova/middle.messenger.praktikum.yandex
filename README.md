@@ -5,25 +5,25 @@
 ## 🔗 Демо
 
 Проект задеплоен на Netlify:\
-[**https://your-netlify-site.netlify.app**](https://your-netlify-site.netlify.app)
+[**https://your-netlify-site.netlify.app**](https://deploy-preview-3--chat-yandex-irina.netlify.app/)
 
 ---
 
 ## 📄 Ссылки на страницы
 
-- [Главная / Меню](https://your-netlify-site.netlify.app)
-- [Авторизация](https://your-netlify-site.netlify.app/login.html)
-- [Регистрация](https://your-netlify-site.netlify.app/register.html)
-- [Профиль](https://your-netlify-site.netlify.app/profile.html)
-- [Чаты](https://your-netlify-site.netlify.app/chats.html)
-- [404](https://your-netlify-site.netlify.app/404.html)
-- [500](https://your-netlify-site.netlify.app/500.html)
+- [Главная / Меню](https://deploy-preview-3--chat-yandex-irina.netlify.app/)
+- [Авторизация](https://deploy-preview-3--chat-yandex-irina.netlify.app/login)
+- [Регистрация](https://deploy-preview-3--chat-yandex-irina.netlify.app/register)
+- [Профиль](https://deploy-preview-3--chat-yandex-irina.netlify.app/profile)
+- [Чаты](https://deploy-preview-3--chat-yandex-irina.netlify.app/chats)
+- [404](https://deploy-preview-3--chat-yandex-irina.netlify.app/404)
+- [500](https://deploy-preview-3--chat-yandex-irina.netlify.app/500)
 
 ---
 
 ## 🖼️ Прототип
 
-[Ссылка на Figma макет](https://www.figma.com/...)
+[Ссылка на Figma макет](https://www.figma.com/design/jF5fFFzgGOxQeB4CmKWTiE/Chat_external_link?node-id=0-1&p=f&t=Ofk6Q5THxqVFHQTq-0)
 
 ---
 
