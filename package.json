@@ -1,6 +1,9 @@
 {
   "name": "chat",
   "version": "1.0.0",
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
     "prebuild": "node precompile.mjs",
     "build": "npm run prebuild && vite build",
@@ -18,4 +21,3 @@
     "vite": "^7.0.0"
   }
 }
-
