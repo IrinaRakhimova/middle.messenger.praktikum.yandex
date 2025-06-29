@@ -8,6 +8,7 @@
     "start": "vite preview"
   },
   "dependencies": {
+    "core-js": "^3.43.0",
     "handlebars": "^4.7.8"
   },
   "devDependencies": {
