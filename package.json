@@ -8,7 +8,8 @@
   "prebuild": "node precompile.mjs",   
   "build": "npm run prebuild && vite build",  
   "dev": "vite",
-  "start": "vite preview --port 3000"
+  "start": "vite build && vite --port 3000",
+  "preview": "vite preview"
 },
   "dependencies": {
     "core-js": "^3.43.0",
