@@ -5,12 +5,11 @@
     "node": "22.x"
   },
   "scripts": {
-  "prebuild": "node precompile.mjs",   
-  "build": "npm run prebuild && vite build",  
-  "dev": "vite",
-  "start": "vite build && vite --port 3000",
-  "preview": "vite preview"
-},
+    "dev": "vite",
+    "build": "vite build",
+    "start": "vite build && node server.cjs",
+    "preview": "vite preview"
+  },
   "dependencies": {
     "core-js": "^3.43.0",
     "handlebars": "^4.7.8"

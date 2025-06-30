@@ -1,14 +1,16 @@
-import { defineConfig } from "vite";
+import { defineConfig } from 'vite';
+import { resolve } from 'path';
+
 export default defineConfig({
-  server: {
-    port: 3000,
-    fs: {
-      strict: true,
+  build: {
+    rollupOptions: {
+      input: {
+        main: resolve(__dirname, 'index.html'),
+      },
     },
   },
-  preview: {
-    port: 3000, 
+  css: {
+    postcss: './postcss.config.js',
   },
-  build: { outDir: "dist", emptyOutDir: false },
 });
 
