@@ -7,7 +7,7 @@ const out = path.resolve('dist');
 const layout = fs.readFileSync(path.join(src, 'templates', 'layout.hbs'), 'utf-8');
 Handlebars.registerPartial('layout', layout);
 
-const pages = ['login','register','profile','chats','404','500'];
+const pages = ['login','register','profile','chats','404','500','profile-edit'];
 
 pages.forEach(name => {
   const templateSrc = fs.readFileSync(path.join(src, 'pages', `${name}.hbs`), 'utf-8');
