@@ -5,3 +5,4 @@ export { Login } from "./login";
 export { Profile } from "./profile";
 export { ProfileEdit } from "./404";
 export { Register } from "./register";
+export { default as Home } from "./home.hbs?raw";
