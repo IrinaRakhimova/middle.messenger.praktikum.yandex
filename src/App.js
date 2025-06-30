@@ -9,15 +9,14 @@ const pageStyles = {
   login: '/styles/login.css',
   register: '/styles/register.css',
   '404': '/styles/404.css',
-  '500': '/styles/500.css'
+  '500': '/styles/500.css',
+  'password-edit': '/styles/password-edit.css'
 };
 
 function setPageStyle(page) {
-  // Remove any existing page style
   const oldLink = document.getElementById('page-style');
   if (oldLink) oldLink.remove();
 
-  // Add new style if exists and not home (main.css is already global)
   if (page !== 'home' && pageStyles[page]) {
     const link = document.createElement('link');
     link.rel = 'stylesheet';
@@ -27,15 +26,10 @@ function setPageStyle(page) {
   }
 }
 
-// Register your partials here if you have any
-// Example:
-// import Header from './components/Header.js';
-// Handlebars.registerPartial('Header', Header);
-
 export default class App {
   constructor() {
     this.state = {
-      currentPage: 'home',  // or your default page name
+      currentPage: 'home',  
     };
     this.appElement = document.getElementById('app');
   }
@@ -52,6 +46,9 @@ export default class App {
         break;
         case 'profile-edit':
         template = Handlebars.compile(Pages.ProfileEdit);
+        break;
+        case 'password-edit':
+        template = Handlebars.compile(Pages.PasswordEdit);
         break;
       case 'login':
         template = Handlebars.compile(Pages.Login);
@@ -76,12 +73,15 @@ export default class App {
   }
 
   attachEventListeners() {
-    // Add navigation for home page links
     const homeLinks = [
       { id: 'link-profile', page: 'profile' },
       { id: 'link-login', page: 'login' },
       { id: 'link-register', page: 'register' },
       { id: 'link-chats', page: 'chats' },
+      { id: 'link-profile-edit', page: 'profile-edit' },
+      { id: 'link-password-edit', page: 'password-edit' },
+      { id: 'link-500', page: '500' },
+      { id: 'link-404', page: '404' },
     ];
     homeLinks.forEach(link => {
       const el = document.getElementById(link.id);
