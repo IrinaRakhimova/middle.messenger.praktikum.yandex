@@ -1,0 +1,9 @@
+export { ChatsPage } from "./chats/ChatsPage";
+export { NotFoundPage } from "./404/NotFoundPage";
+export { ServerErrorPage } from "./500/ServerErrorPage";
+export { LoginPage } from "./login/LoginPage";
+export { ProfilePage } from "./profile/ProfilePage";
+export { ProfileEditPage } from "./profile-edit/ProfileEditPage";
+export { RegisterPage } from './register/RegisterPage';
+export { PasswordEditPage } from "./password-edit/PasswordEditPage";
+export { HomePage } from "./home/HomePage";

@@ -1,3 +1,4 @@
+<div>
 <p><a href="/">← Назад к меню</a></p>
 <div class="profile-page">
   <div class="container">
@@ -8,18 +9,21 @@
     </div>
   </div>
 
-  <h1>Иван</h1>
+  <h1>{{displayName}}</h1>
   <ul class="profile-info">
-    <li><strong>Почта</strong><p>pochta@yandex.ru</p></li>
-    <li><strong>Логин</strong><p>ivanivanov</p></li>
-    <li><strong>Имя</strong><p>Иван</p></li>
-    <li><strong>Фамилия</strong><p>Иванов</p></li>
-    <li><strong>Имя в чате</strong><p>Иван</p></li>  
-    <li class="last-li"><strong>Телефон</strong><p>+7 (909) 967 30 30</p></li>
+    <li><strong>Почта</strong><p>{{email}}</p></li>
+    <li><strong>Логин</strong><p>{{login}}</p></li>
+    <li><strong>Имя</strong><p>{{firstName}}</p></li>
+    <li><strong>Фамилия</strong><p>{{secondName}}</p></li>
+    <li><strong>Имя в чате</strong><p>{{displayName}}</p></li>  
+    <li class="last-li"><strong>Телефон</strong><p>{{phone}}</p></li>
   </ul>
   <div class="profile-actions">
-    <button class="btn">Изменить данные</button>
-    <button class="btn">Изменить пароль</button>
-    <button class="btn logout">Выйти</button>
+    {{{editButton}}}
+    {{{passwordButton}}}
+    <div class="logout">
+      {{{logoutButton}}}
+    </div>
   </div>
+</div>
 </div>

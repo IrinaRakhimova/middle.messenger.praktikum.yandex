@@ -1,0 +1,40 @@
+.message {
+  position: relative;
+  max-width: 60%;
+  width: fit-content;
+  padding: 0.5rem 0.75rem;
+  border-radius: 10px;
+  word-wrap: break-word;
+  display: inline-block;
+}
+
+.message .meta {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: #999;
+  margin-top: 4px;
+}
+
+.message.incoming {
+  background: rgba(248, 248, 248, 1);
+  align-self: flex-start;
+  border-radius: 0 10px 10px 10px;
+}
+
+.message.outgoing {
+  background: rgba(228, 237, 253, 1);
+  align-self: flex-end;
+  margin-left: auto;
+  border-radius: 10px 10px 0 10px;
+}
+
+.tick {
+  color: #4fc3f7; 
+}
+
+.bubble-text {
+  margin-bottom: 10px;
+}
