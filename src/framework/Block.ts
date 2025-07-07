@@ -16,6 +16,12 @@ export abstract class Block<TProps extends Record<string, unknown> = Record<stri
   protected props: TProps;
   private eventBus: EventBus<BlockEvents>;
 
+  private _listeners: Array<{
+    element: Element;
+    type: string;
+    listener: EventListenerOrEventListenerObject;
+  }> = [];
+
   constructor(props: TProps) {
     this.props = props;
     this.eventBus = new EventBus<BlockEvents>();
@@ -32,7 +38,9 @@ export abstract class Block<TProps extends Record<string, unknown> = Record<stri
     this.eventBus.emit(Block.EVENTS.FLOW_RENDER);
   }
 
-  protected _render(): void {
+  private _render(): void {
+    this.removeEventListeners();
+
     const template = Handlebars.compile(this.render());
     const htmlString = template(this.props);
     const temp = document.createElement('template');
@@ -48,4 +56,28 @@ export abstract class Block<TProps extends Record<string, unknown> = Record<stri
   protected abstract render(): string;
 
   public afterRender(): void {}
+
+  protected addEventListener<K extends keyof HTMLElementEventMap>(
+    element: Element,
+    type: K,
+    listener: (this: Element, ev: HTMLElementEventMap[K]) => any
+  ): void {
+    element.addEventListener(type, listener);
+    this._listeners.push({ element, type, listener });
+  }
+
+  protected removeEventListeners(): void {
+    this._listeners.forEach(({ element, type, listener }) => {
+      element.removeEventListener(type, listener);
+    });
+    this._listeners = [];
+  }
+
+  protected componentWillUnmount(): void {}
+
+  public destroy(): void {
+    this.componentWillUnmount();
+    this.removeEventListeners();
+    this._element = null;
+  }
 }

@@ -1,6 +1,6 @@
-import { Block } from '../../framework/Block';
-import template from './input.hbs?raw';
-import './input.css';
+import { Block } from "../../framework/Block";
+import template from "./input.hbs?raw";
+import "./input.css";
 
 interface InputProps {
   type: string;
@@ -9,7 +9,7 @@ interface InputProps {
   value?: string;
   required?: boolean;
 
-  [key: string]: unknown; 
+  [key: string]: unknown;
 }
 
 export class Input extends Block<InputProps> {

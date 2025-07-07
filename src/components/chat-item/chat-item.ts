@@ -1,6 +1,6 @@
-import { Block } from '../../framework/Block';
-import template from './chat-item.hbs?raw';
-import './chat-item.css';
+import { Block } from "../../framework/Block";
+import template from "./chat-item.hbs?raw";
+import "./chat-item.css";
 
 export class ChatItem extends Block {
   constructor(props: {

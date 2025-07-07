@@ -10,14 +10,27 @@ interface ButtonProps {
 }
 
 export class Button extends Block<ButtonProps> {
+  private handleClick = () => {
+    if (this.props.onClick) {
+      this.props.onClick();
+    }
+  };
+
   constructor(props: ButtonProps) {
     super(props);
   }
 
   public afterRender(): void {
     const el = this.getContent();
-    if (el && this.props.onClick) {
-      el.addEventListener('click', this.props.onClick);
+    if (el) {
+      el.addEventListener('click', this.handleClick);
+    }
+  }
+
+  protected componentWillUnmount(): void {
+    const el = this.getContent();
+    if (el) {
+      el.removeEventListener('click', this.handleClick);
     }
   }
 

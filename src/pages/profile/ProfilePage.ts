@@ -1,7 +1,7 @@
-import { Block } from '../../framework/Block';
-import template from './profile.hbs?raw';
-import { Button } from '../../components/button/button';
-import './profile.css';
+import { Block } from "../../framework/Block";
+import template from "./profile.hbs?raw";
+import { Button } from "../../components/button/button";
+import "./profile.css";
 
 interface ProfilePageProps {
   displayName: string;
@@ -13,7 +13,7 @@ interface ProfilePageProps {
   editButton: string;
   passwordButton: string;
   logoutButton: string;
-  [key: string]: unknown; 
+  [key: string]: unknown;
 }
 
 export class ProfilePage extends Block<ProfilePageProps> {
@@ -22,20 +22,29 @@ export class ProfilePage extends Block<ProfilePageProps> {
   private logoutButton: Button;
 
   constructor() {
-    const editButton = new Button({ label: 'Изменить данные', onClick: () => this.changeToEdit() });
-    const passwordButton = new Button({ label: 'Изменить пароль', onClick: () => this.changeToPassword() });
-    const logoutButton = new Button({ label: 'Выйти', onClick: () => this.handleLogout() });
+    const editButton = new Button({
+      label: "Изменить данные",
+      onClick: () => this.changeToEdit(),
+    });
+    const passwordButton = new Button({
+      label: "Изменить пароль",
+      onClick: () => this.changeToPassword(),
+    });
+    const logoutButton = new Button({
+      label: "Выйти",
+      onClick: () => this.handleLogout(),
+    });
 
     super({
-      displayName: 'Иван Иванов',
-      email: 'ivan@example.com',
-      login: 'ivanivanov',
-      firstName: 'Иван',
-      secondName: 'Иванов',
-      phone: '+71234567890',
-      editButton: editButton.getContent()?.outerHTML || '',
-      passwordButton: passwordButton.getContent()?.outerHTML || '',
-      logoutButton: logoutButton.getContent()?.outerHTML || '',
+      displayName: "Иван Иванов",
+      email: "ivan@example.com",
+      login: "ivanivanov",
+      firstName: "Иван",
+      secondName: "Иванов",
+      phone: "+71234567890",
+      editButton: editButton.getContent()?.outerHTML || "",
+      passwordButton: passwordButton.getContent()?.outerHTML || "",
+      logoutButton: logoutButton.getContent()?.outerHTML || "",
     });
 
     this.editButton = editButton;
@@ -54,14 +63,22 @@ export class ProfilePage extends Block<ProfilePageProps> {
   }
 
   private changeToEdit(): void {
-    console.log('Navigating to profile edit...');
+    // eslint-disable-next-line no-console
+    console.log("Navigating to profile edit...");
   }
 
   private changeToPassword(): void {
-    console.log('Navigating to password change...');
+    // eslint-disable-next-line no-console
+    console.log("Navigating to password change...");
   }
 
   private handleLogout(): void {
-    console.log('Logging out...');
+    // eslint-disable-next-line no-console
+    console.log("Logging out...");
+  }
+
+  protected componentWillUnmount(): void {
+    // eslint-disable-next-line no-console
+    console.log("ProfilePage is being destroyed");
   }
 }

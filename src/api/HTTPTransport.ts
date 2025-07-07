@@ -1,4 +1,9 @@
-type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
+export enum HTTPMethod {
+  GET = "GET",
+  POST = "POST",
+  PUT = "PUT",
+  DELETE = "DELETE",
+}
 
 interface Options {
   method?: HTTPMethod;
@@ -14,32 +19,38 @@ interface RequestOptions extends Options {
 export class HTTPTransport {
   private baseUrl: string;
 
-  constructor(baseUrl = '') {
+  constructor(baseUrl = "") {
     this.baseUrl = baseUrl;
   }
 
   public get(
     url: string,
-    options: { headers?: Record<string, string>; data?: Record<string, unknown> } = {}
+    options: {
+      headers?: Record<string, string>;
+      data?: Record<string, unknown>;
+    } = {}
   ): Promise<unknown> {
     let requestUrl = url;
     if (options.data) {
       const queryString = this.queryStringify(options.data);
-      requestUrl += queryString ? `?${queryString}` : '';
+      requestUrl += queryString ? `?${queryString}` : "";
     }
-    return this.request(requestUrl, { method: 'GET', headers: options.headers });
+    return this.request(requestUrl, {
+      method: HTTPMethod.GET,
+      headers: options.headers,
+    });
   }
 
   public post(url: string, options: Options = {}): Promise<unknown> {
-    return this.request(url, { ...options, method: 'POST' });
+    return this.request(url, { ...options, method: HTTPMethod.POST });
   }
 
   public put(url: string, options: Options = {}): Promise<unknown> {
-    return this.request(url, { ...options, method: 'PUT' });
+    return this.request(url, { ...options, method: HTTPMethod.PUT });
   }
 
   public delete(url: string, options: Options = {}): Promise<unknown> {
-    return this.request(url, { ...options, method: 'DELETE' });
+    return this.request(url, { ...options, method: HTTPMethod.DELETE });
   }
 
   private request(url: string, options: RequestOptions): Promise<unknown> {
@@ -62,22 +73,24 @@ export class HTTPTransport {
             const json = JSON.parse(responseText);
             resolve(json);
           } catch {
-            resolve(responseText); 
+            resolve(responseText);
           }
         } else {
           reject({ status, statusText, response: responseText });
         }
       };
 
-      xhr.onerror = () => reject({ status: xhr.status, statusText: xhr.statusText });
-      xhr.ontimeout = () => reject({ status: xhr.status, statusText: 'Timeout' });
+      xhr.onerror = () =>
+        reject({ status: xhr.status, statusText: xhr.statusText });
+      xhr.ontimeout = () =>
+        reject({ status: xhr.status, statusText: "Timeout" });
 
-      if (method === 'GET' || !data) {
+      if (method === "GET" || !data) {
         xhr.send();
       } else if (data instanceof FormData) {
         xhr.send(data);
       } else {
-        xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         xhr.send(JSON.stringify(data));
       }
     });
@@ -85,7 +98,10 @@ export class HTTPTransport {
 
   private queryStringify(data: Record<string, unknown>): string {
     return Object.entries(data)
-      .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`)
-      .join('&');
+      .map(
+        ([key, value]) =>
+          `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`
+      )
+      .join("&");
   }
 }
