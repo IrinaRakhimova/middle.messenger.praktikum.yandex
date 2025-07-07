@@ -9,7 +9,7 @@
     "noUnusedParameters": true,
     "strictNullChecks": true,
     "allowSyntheticDefaultImports": true,
-    "noEmit": true,
+    "noEmit": true
   },
   "include": [
     "src/**/*.ts",
