@@ -1,0 +1,17 @@
+<li class="chat-item {{#if unread}}has-unread{{/if}}">
+  <div class="chat-preview">
+    <div class="avatar-placeholder"></div>
+    <div class="chat-text">
+      <div class="chat-name-time">
+        <span class="chat-name">{{name}}</span>
+        <span class="chat-time">{{time}}</span>
+      </div>
+      <div class="chat-last-unread">
+        <span class="chat-last">{{lastMessage}}</span>
+        {{#if unread}}
+          <span class="unread-count">{{unread}}</span>
+        {{/if}}
+      </div>
+    </div>
+  </div>
+</li>

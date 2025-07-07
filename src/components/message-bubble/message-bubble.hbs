@@ -1,0 +1,11 @@
+<div class="message {{#if incoming}}incoming{{else}}outgoing{{/if}}">
+  <div class="bubble-content">
+    <p class="bubble-text">{{text}}</p>
+    <span class="bubble-meta">
+      <time class="bubble-time">{{time}}</time>
+      {{#unless incoming}}
+        <span class="bubble-tick">✔</span>
+      {{/unless}}
+    </span>
+  </div>
+</div>
