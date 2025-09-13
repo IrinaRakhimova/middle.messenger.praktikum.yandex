@@ -8,7 +8,11 @@
     "dev": "vite",
     "build": "vite build",
     "start": "vite build && node server.cjs",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint . --ext .ts,.tsx,.js",
+    "check": "npm run type-check && npm run lint",
+    "lint:css": "stylelint \"**/*.css\""
   },
   "dependencies": {
     "core-js": "^3.43.0",
@@ -16,9 +20,20 @@
     "handlebars": "^4.7.8"
   },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.35.1",
+    "@typescript-eslint/parser": "^8.35.1",
     "autoprefixer": "^10.4.21",
+    "eslint": "^8.57.1",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^4.6.2",
     "postcss": "^8.5.6",
     "postcss-preset-env": "^10.2.4",
-    "vite": "^7.0.0"
+    "stylelint": "^16.21.1",
+    "stylelint-config-standard": "^38.0.0",
+    "vite": "^7.0.0",
+    "typescript": "^5.8.3"
   }
 }
