@@ -59,6 +59,9 @@ export class HTTPTransport {
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
       xhr.open(method, this.baseUrl + url, true);
+
+      xhr.withCredentials = true;
+
       xhr.timeout = timeout;
 
       Object.entries(headers).forEach(([key, value]) => {

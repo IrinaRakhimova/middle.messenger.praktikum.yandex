@@ -2,6 +2,9 @@ import { Block } from "../../framework/Block";
 import template from "./profile.hbs?raw";
 import { Button } from "../../components/button/button";
 import "./profile.css";
+import { authAPI } from "../../api/authAPI";
+import Router from "../../utils/Router";
+import { Routes } from "../../main";
 
 interface ProfilePageProps {
   displayName: string;
@@ -10,26 +13,24 @@ interface ProfilePageProps {
   firstName: string;
   secondName: string;
   phone: string;
-  editButton: string;
-  passwordButton: string;
-  logoutButton: string;
+  editButton: Button;
+  passwordButton: Button;
+  logoutButton: Button;
   [key: string]: unknown;
 }
 
 export class ProfilePage extends Block<ProfilePageProps> {
-  private editButton: Button;
-  private passwordButton: Button;
-  private logoutButton: Button;
-
   constructor() {
     const editButton = new Button({
       label: "Изменить данные",
       onClick: () => this.changeToEdit(),
     });
+
     const passwordButton = new Button({
       label: "Изменить пароль",
       onClick: () => this.changeToPassword(),
     });
+
     const logoutButton = new Button({
       label: "Выйти",
       onClick: () => this.handleLogout(),
@@ -42,43 +43,35 @@ export class ProfilePage extends Block<ProfilePageProps> {
       firstName: "Иван",
       secondName: "Иванов",
       phone: "+71234567890",
-      editButton: editButton.getContent()?.outerHTML || "",
-      passwordButton: passwordButton.getContent()?.outerHTML || "",
-      logoutButton: logoutButton.getContent()?.outerHTML || "",
+      editButton,
+      passwordButton,
+      logoutButton,
     });
-
-    this.editButton = editButton;
-    this.passwordButton = passwordButton;
-    this.logoutButton = logoutButton;
   }
 
   protected render(): string {
     return template;
   }
 
-  public afterRender(): void {
-    this.editButton?.afterRender();
-    this.passwordButton?.afterRender();
-    this.logoutButton?.afterRender();
-  }
-
   private changeToEdit(): void {
-    // eslint-disable-next-line no-console
     console.log("Navigating to profile edit...");
   }
 
   private changeToPassword(): void {
-    // eslint-disable-next-line no-console
     console.log("Navigating to password change...");
   }
 
-  private handleLogout(): void {
-    // eslint-disable-next-line no-console
-    console.log("Logging out...");
+  private async handleLogout(): Promise<void> {
+    try {
+      await authAPI.logout();
+      console.log("Logout success");
+      Router.go(Routes.Login);
+    } catch (err) {
+      console.error("Logout failed", err);
+    }
   }
 
   protected componentWillUnmount(): void {
-    // eslint-disable-next-line no-console
     console.log("ProfilePage is being destroyed");
   }
 }

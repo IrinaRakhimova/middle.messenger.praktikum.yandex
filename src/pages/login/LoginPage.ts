@@ -4,6 +4,9 @@ import { Input } from "../../components/input/input";
 import { Button } from "../../components/button/button";
 import "./login.css";
 import { validateField } from "../../utils/validation";
+import { authAPI } from "../../api/authAPI";   
+import Router from "../../utils/Router";      
+import { Routes } from "../../main";
 
 export class LoginPage extends Block {
   private loginInput: Input;
@@ -18,6 +21,7 @@ export class LoginPage extends Block {
       value: "",
       required: true,
     });
+
     const passwordInput = new Input({
       type: "password",
       name: "password",
@@ -25,6 +29,7 @@ export class LoginPage extends Block {
       value: "",
       required: true,
     });
+
     const submitButton = new Button({
       label: "Авторизоваться",
       type: "submit",
@@ -66,25 +71,6 @@ export class LoginPage extends Block {
       'input[name="password"]'
     );
 
-    if (loginEl) {
-      this.addEventListener(loginEl, "blur", () => {
-        const { valid, error } = validateField("login", loginEl.value.trim());
-        loginEl.setCustomValidity(valid ? "" : error || "Ошибка");
-        if (!valid) loginEl.reportValidity();
-      });
-    }
-
-    if (passwordEl) {
-      this.addEventListener(passwordEl, "blur", () => {
-        const { valid, error } = validateField(
-          "password",
-          passwordEl.value.trim()
-        );
-        passwordEl.setCustomValidity(valid ? "" : error || "Ошибка");
-        if (!valid) passwordEl.reportValidity();
-      });
-    }
-
     if (form) {
       this.addEventListener(form, "submit", (e) => {
         e.preventDefault();
@@ -93,26 +79,23 @@ export class LoginPage extends Block {
     }
   }
 
-  protected componentWillUnmount(): void {
-    // eslint-disable-next-line no-console
-    console.log("LoginPage is being destroyed");
-  }
-
-  private handleSubmit(
+  private async handleSubmit(
     loginEl?: HTMLInputElement | null,
     passwordEl?: HTMLInputElement | null
-  ): void {
+  ): Promise<void> {
     if (!loginEl || !passwordEl) return;
 
     const login = loginEl.value.trim();
     const password = passwordEl.value.trim();
 
     const loginValid = validateField("login", login);
+    console.log("Login value:", login, "Validation result:", loginValid);
     const passwordValid = validateField("password", password);
 
     if (!loginValid.valid) {
       loginEl.setCustomValidity(loginValid.error || "");
       loginEl.reportValidity();
+      return;
     } else {
       loginEl.setCustomValidity("");
     }
@@ -120,14 +103,23 @@ export class LoginPage extends Block {
     if (!passwordValid.valid) {
       passwordEl.setCustomValidity(passwordValid.error || "");
       passwordEl.reportValidity();
+      return;
     } else {
       passwordEl.setCustomValidity("");
     }
 
-    if (!loginValid.valid || !passwordValid.valid) {
-      return;
+    try {
+      await authAPI.signin({ login, password });
+      console.log("Login success");
+
+      const user = await authAPI.getUser();
+      console.log("Current user:", user);
+
+      Router.go(Routes.Chats);
+
+    } catch (err) {
+      console.error("Login failed", err);
+      alert("Неверный логин или пароль");
     }
-    // eslint-disable-next-line no-console
-    console.log("Login attempt:", { login, password });
   }
 }

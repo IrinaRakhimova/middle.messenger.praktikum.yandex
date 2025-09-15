@@ -4,6 +4,8 @@ import { Input } from "../../components/input/input";
 import { Button } from "../../components/button/button";
 import "./register.css";
 import { validateField } from "../../utils/validation";
+import { authAPI } from "../../api/authAPI";
+import { SignUpRequest } from "../../api/authAPI";
 
 export class RegisterPage extends Block {
   private emailInput: Input;
@@ -51,36 +53,33 @@ export class RegisterPage extends Block {
       name: "password_confirm",
       label: "Пароль (ещё раз)",
     });
-    const submitButton = new Button({ 
+    const submitButton = new Button({
       label: "Зарегистрироваться",
-      type: "submit", 
+      type: "submit",
     });
 
     super({
       emailInput:
-        emailInput.getContent()?.outerHTML ||
-        "<div>Email input failed to render</div>",
+        emailInput.getContent()?.outerHTML || "<div>Email input failed</div>",
       loginInput:
-        loginInput.getContent()?.outerHTML ||
-        "<div>Login input failed to render</div>",
+        loginInput.getContent()?.outerHTML || "<div>Login input failed</div>",
       firstNameInput:
         firstNameInput.getContent()?.outerHTML ||
-        "<div>First name input failed to render</div>",
+        "<div>First name input failed</div>",
       secondNameInput:
         secondNameInput.getContent()?.outerHTML ||
-        "<div>Second name input failed to render</div>",
+        "<div>Second name input failed</div>",
       phoneInput:
-        phoneInput.getContent()?.outerHTML ||
-        "<div>Phone input failed to render</div>",
+        phoneInput.getContent()?.outerHTML || "<div>Phone input failed</div>",
       passwordInput:
         passwordInput.getContent()?.outerHTML ||
-        "<div>Password input failed to render</div>",
+        "<div>Password input failed</div>",
       confirmPasswordInput:
         confirmPasswordInput.getContent()?.outerHTML ||
-        "<div>Confirm password input failed to render</div>",
+        "<div>Confirm password input failed</div>",
       submitButton:
         submitButton.getContent()?.outerHTML ||
-        "<div>Submit button failed to render</div>",
+        "<div>Submit button failed</div>",
     });
 
     this.emailInput = emailInput;
@@ -175,7 +174,7 @@ export class RegisterPage extends Block {
     input.classList.remove("input-error");
   }
 
-  private handleSubmit(): void {
+  private async handleSubmit(): Promise<void> {
     const form =
       this.getContent()?.querySelector<HTMLFormElement>("#register-form");
     if (!form) return;
@@ -189,23 +188,30 @@ export class RegisterPage extends Block {
     });
 
     if (!formIsValid) {
-      // eslint-disable-next-line no-console
       console.log("Form contains errors. Fix them before submitting.");
       return;
     }
 
     const formData = new FormData(form);
-    const data: Record<string, string> = {};
 
-    for (const [key, value] of formData.entries()) {
-      data[key] = value.toString().trim();
+    const data: SignUpRequest = {
+      first_name: formData.get("first_name") as string,
+      second_name: formData.get("second_name") as string,
+      login: formData.get("login") as string,
+      email: formData.get("email") as string,
+      password: formData.get("password") as string,
+      phone: formData.get("phone") as string,
+    };
+
+    try {
+      const response = await authAPI.signup(data);
+      console.log("Signup success:", response);
+    } catch (err) {
+      console.error("Signup failed:", err);
     }
-    // eslint-disable-next-line no-console
-    console.log("Register form data:", data);
   }
 
   protected componentWillUnmount(): void {
-    // eslint-disable-next-line no-console
-    console.log("ProfileEditPage will unmount");
+    console.log("RegisterPage will unmount");
   }
 }

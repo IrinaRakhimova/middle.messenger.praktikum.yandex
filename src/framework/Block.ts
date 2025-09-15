@@ -1,15 +1,17 @@
-import Handlebars from 'handlebars';
-import { EventBus } from './EventBus';
+import Handlebars from "handlebars";
+import { EventBus } from "./EventBus";
 
 type BlockEvents = {
   init: [];
-  'flow:render': [];
+  "flow:render": [];
 };
 
-export abstract class Block<TProps extends Record<string, unknown> = Record<string, unknown>> {
+export abstract class Block<
+  TProps extends Record<string, unknown> = Record<string, unknown>
+> {
   static EVENTS = {
-    INIT: 'init',
-    FLOW_RENDER: 'flow:render',
+    INIT: "init",
+    FLOW_RENDER: "flow:render",
   } as const;
 
   private _element: HTMLElement | null = null;
@@ -42,10 +44,34 @@ export abstract class Block<TProps extends Record<string, unknown> = Record<stri
     this.removeEventListeners();
 
     const template = Handlebars.compile(this.render());
-    const htmlString = template(this.props);
-    const temp = document.createElement('template');
+
+    const templateProps: Record<string, unknown> = {};
+    Object.entries(this.props || {}).forEach(([key, value]) => {
+      if (value instanceof Block) {
+        templateProps[key] = `<div data-block="${key}"></div>`;
+      } else {
+        templateProps[key] = value;
+      }
+    });
+
+    const htmlString = template(templateProps);
+    const temp = document.createElement("template");
     temp.innerHTML = htmlString.trim();
     this._element = temp.content.firstElementChild as HTMLElement;
+
+    Object.entries(this.props || {}).forEach(([key, value]) => {
+      if (value instanceof Block) {
+        const placeholder = this._element?.querySelector(
+          `[data-block="${key}"]`
+        );
+        const childContent = value.getContent();
+        if (placeholder && childContent) {
+          placeholder.replaceWith(childContent);
+          value.afterRender();
+        }
+      }
+    });
+
     this.afterRender();
   }
 
@@ -78,6 +104,23 @@ export abstract class Block<TProps extends Record<string, unknown> = Record<stri
   public destroy(): void {
     this.componentWillUnmount();
     this.removeEventListeners();
+
+    Object.values(this.props || {}).forEach((value) => {
+      if (value instanceof Block) {
+        value.destroy();
+      }
+    });
+
     this._element = null;
+  }
+
+  public hide(): void {
+    const el = this.getContent();
+    if (el) el.style.display = "none";
+  }
+
+  public show(): void {
+    const el = this.getContent();
+    if (el) el.style.display = "";
   }
 }
