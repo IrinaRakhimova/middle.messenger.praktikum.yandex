@@ -4,6 +4,10 @@ import { Input } from "../../components/input/input";
 import { Button } from "../../components/button/button";
 import "./profile-edit.css";
 import { validateField } from "../../utils/validation";
+import { store } from "../../store/Store";
+import Router from "../../utils/Router";
+import { Routes } from "../../main";
+import { userAPI, UserUpdateRequest } from "../../api/userAPI";
 
 export class ProfileEditPage extends Block {
   private emailInput: Input;
@@ -14,50 +18,67 @@ export class ProfileEditPage extends Block {
   private phoneInput: Input;
   private saveButton: Button;
 
-  constructor() {
+ constructor() {
+    const user = store.getState().user;
+
+    if (!user) {
+      Router.go(Routes.Login);
+      return;
+    }
+
+    // Define the base URL for user resources (including avatars)
+    const AVATAR_BASE_URL = "https://ya-praktikum.tech/api/v2/resources";
+    
+    // Construct the full URL for the avatar
+    const avatarUrl = user.avatar 
+        ? `${AVATAR_BASE_URL}${user.avatar}` 
+        : "https://via.placeholder.com/150"; // Provide a default placeholder
+
     const emailInput = new Input({
       type: "email",
       name: "email",
       label: "Почта",
-      value: "pochta@yandex.ru",
+      value: user.email,
     });
+    // ... (repeat for all other inputs)
     const loginInput = new Input({
       type: "text",
       name: "login",
       label: "Логин",
-      value: "ivanivanov",
+      value: user.login,
     });
     const firstNameInput = new Input({
       type: "text",
       name: "first_name",
       label: "Имя",
-      value: "Иван",
+      value: user.first_name,
     });
     const secondNameInput = new Input({
       type: "text",
       name: "second_name",
       label: "Фамилия",
-      value: "Иванов",
+      value: user.second_name,
     });
     const displayNameInput = new Input({
       type: "text",
       name: "display_name",
       label: "Имя в чате",
-      value: "Иван",
+      value: user.display_name || "",
     });
     const phoneInput = new Input({
       type: "tel",
       name: "phone",
       label: "Телефон",
-      value: "+7 (909) 967 30 30",
+      value: user.phone,
     });
     const saveButton = new Button({
       label: "Сохранить",
       type: "submit",
-      onClick: () => this.handleSave(),
     });
 
     const props = {
+      // Pass the avatarUrl to the props
+      avatarUrl, 
       emailInput: emailInput.getContent()?.outerHTML || "",
       loginInput: loginInput.getContent()?.outerHTML || "",
       firstNameInput: firstNameInput.getContent()?.outerHTML || "",
@@ -122,15 +143,18 @@ export class ProfileEditPage extends Block {
     console.log("ProfileEditPage will unmount");
   }
 
-  private handleSave(): void {
+   private async handleSave(): Promise<void> {
     const form =
       this.getContent()?.querySelector<HTMLFormElement>("#profile-edit-form");
-    const inputs = form?.querySelectorAll<HTMLInputElement>("input");
+    if (!form) return;
 
+    const inputs = form.querySelectorAll<HTMLInputElement>("input");
     let isValid = true;
-    const data: Record<string, string> = {};
+    
+    // Create an empty object with the correct type
+    const data: Partial<UserUpdateRequest> = {};
 
-    inputs?.forEach((input) => {
+    inputs.forEach((input) => {
       const value = input.value.trim();
       const { valid, error } = validateField(input.name, value);
 
@@ -144,15 +168,30 @@ export class ProfileEditPage extends Block {
         input.setCustomValidity("");
       }
 
-      data[input.name] = value;
+      // Assign values to the data object using the correct keys
+      // The `as string` type assertion is necessary here
+      data[input.name as keyof UserUpdateRequest] = value;
     });
 
     if (!isValid) {
-      // eslint-disable-next-line no-console
-      console.warn("Validation failed");
+      console.warn("Validation failed. Please fix the errors.");
       return;
     }
-    // eslint-disable-next-line no-console
-    console.log("Profile edited:", data);
+
+    try {
+      // Cast the object to the required type before sending
+      const updatedUser = await userAPI.updateProfile(data as UserUpdateRequest);
+      
+      // Update the store with the new user data
+      store.setUser(updatedUser);
+
+      // Redirect the user back to the profile page
+      Router.go(Routes.Profile);
+
+      console.log("Profile updated successfully:", updatedUser);
+
+    } catch (err) {
+      console.error("Failed to update profile:", err);
+    }
   }
 }

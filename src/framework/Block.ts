@@ -39,6 +39,7 @@ export abstract class Block<
   private init(): void {
     this.eventBus.emit(Block.EVENTS.FLOW_RENDER);
   }
+  
 
   private _render(): void {
     this.removeEventListeners();
@@ -113,6 +114,12 @@ export abstract class Block<
 
     this._element = null;
   }
+
+  public setProps(nextProps: Partial<TProps>): void {
+  if (!nextProps) return;
+  this.props = { ...this.props, ...nextProps };
+  this.eventBus.emit(Block.EVENTS.FLOW_RENDER);
+}
 
   public hide(): void {
     const el = this.getContent();

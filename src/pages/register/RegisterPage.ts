@@ -6,6 +6,8 @@ import "./register.css";
 import { validateField } from "../../utils/validation";
 import { authAPI } from "../../api/authAPI";
 import { SignUpRequest } from "../../api/authAPI";
+import Router from "../../utils/Router";
+import { Routes } from "../../main";
 
 export class RegisterPage extends Block {
   private emailInput: Input;
@@ -206,6 +208,11 @@ export class RegisterPage extends Block {
     try {
       const response = await authAPI.signup(data);
       console.log("Signup success:", response);
+
+      const user = await authAPI.getUser();
+      console.log("Current user:", user);
+
+      Router.go(Routes.Chats);
     } catch (err) {
       console.error("Signup failed:", err);
     }

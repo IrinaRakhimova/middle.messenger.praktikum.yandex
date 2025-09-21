@@ -7,6 +7,7 @@ import { validateField } from "../../utils/validation";
 import { authAPI } from "../../api/authAPI";   
 import Router from "../../utils/Router";      
 import { Routes } from "../../main";
+import { store } from "../../store/Store";
 
 export class LoginPage extends Block {
   private loginInput: Input;
@@ -114,6 +115,8 @@ export class LoginPage extends Block {
 
       const user = await authAPI.getUser();
       console.log("Current user:", user);
+
+      store.setUser(user);
 
       Router.go(Routes.Chats);
 
