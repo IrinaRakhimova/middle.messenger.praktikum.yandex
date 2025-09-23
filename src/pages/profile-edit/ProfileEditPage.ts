@@ -8,6 +8,7 @@ import { store } from "../../store/Store";
 import Router from "../../utils/Router";
 import { Routes } from "../../main";
 import { userAPI, UserUpdateRequest } from "../../api/userAPI";
+import { authAPI } from "../../api/authAPI";
 
 export class ProfileEditPage extends Block {
   private emailInput: Input;
@@ -18,7 +19,7 @@ export class ProfileEditPage extends Block {
   private phoneInput: Input;
   private saveButton: Button;
 
- constructor() {
+  constructor() {
     const user = store.getState().user;
 
     if (!user) {
@@ -26,13 +27,10 @@ export class ProfileEditPage extends Block {
       return;
     }
 
-    // Define the base URL for user resources (including avatars)
     const AVATAR_BASE_URL = "https://ya-praktikum.tech/api/v2/resources";
-    
-    // Construct the full URL for the avatar
-    const avatarUrl = user.avatar 
-        ? `${AVATAR_BASE_URL}${user.avatar}` 
-        : "https://via.placeholder.com/150"; // Provide a default placeholder
+    const avatarUrl = user.avatar
+      ? `${AVATAR_BASE_URL}${user.avatar}`
+      : "https://via.placeholder.com/150";
 
     const emailInput = new Input({
       type: "email",
@@ -40,7 +38,6 @@ export class ProfileEditPage extends Block {
       label: "Почта",
       value: user.email,
     });
-    // ... (repeat for all other inputs)
     const loginInput = new Input({
       type: "text",
       name: "login",
@@ -76,19 +73,16 @@ export class ProfileEditPage extends Block {
       type: "submit",
     });
 
-    const props = {
-      // Pass the avatarUrl to the props
-      avatarUrl, 
-      emailInput: emailInput.getContent()?.outerHTML || "",
-      loginInput: loginInput.getContent()?.outerHTML || "",
-      firstNameInput: firstNameInput.getContent()?.outerHTML || "",
-      secondNameInput: secondNameInput.getContent()?.outerHTML || "",
-      displayNameInput: displayNameInput.getContent()?.outerHTML || "",
-      phoneInput: phoneInput.getContent()?.outerHTML || "",
-      saveButton: saveButton.getContent()?.outerHTML || "",
-    };
-
-    super(props);
+    super({
+      avatarUrl,
+      emailInput,
+      loginInput,
+      firstNameInput,
+      secondNameInput,
+      displayNameInput,
+      phoneInput,
+      saveButton,
+    });
 
     this.emailInput = emailInput;
     this.loginInput = loginInput;
@@ -143,15 +137,14 @@ export class ProfileEditPage extends Block {
     console.log("ProfileEditPage will unmount");
   }
 
-   private async handleSave(): Promise<void> {
+  private async handleSave(): Promise<void> {
     const form =
       this.getContent()?.querySelector<HTMLFormElement>("#profile-edit-form");
     if (!form) return;
 
     const inputs = form.querySelectorAll<HTMLInputElement>("input");
     let isValid = true;
-    
-    // Create an empty object with the correct type
+
     const data: Partial<UserUpdateRequest> = {};
 
     inputs.forEach((input) => {
@@ -168,8 +161,6 @@ export class ProfileEditPage extends Block {
         input.setCustomValidity("");
       }
 
-      // Assign values to the data object using the correct keys
-      // The `as string` type assertion is necessary here
       data[input.name as keyof UserUpdateRequest] = value;
     });
 
@@ -179,16 +170,12 @@ export class ProfileEditPage extends Block {
     }
 
     try {
-      // Cast the object to the required type before sending
-      const updatedUser = await userAPI.updateProfile(data as UserUpdateRequest);
-      
-      // Update the store with the new user data
-      store.setUser(updatedUser);
+      await userAPI.updateProfile(data as UserUpdateRequest);
 
-      // Redirect the user back to the profile page
+      const freshUser = await authAPI.getUser();
+      store.setUser(freshUser);
+
       Router.go(Routes.Profile);
-
-      console.log("Profile updated successfully:", updatedUser);
 
     } catch (err) {
       console.error("Failed to update profile:", err);

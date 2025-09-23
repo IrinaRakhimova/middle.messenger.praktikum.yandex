@@ -4,8 +4,8 @@ import { Input } from "../../components/input/input";
 import { Button } from "../../components/button/button";
 import "./login.css";
 import { validateField } from "../../utils/validation";
-import { authAPI } from "../../api/authAPI";   
-import Router from "../../utils/Router";      
+import { authAPI } from "../../api/authAPI";
+import Router from "../../utils/Router";
 import { Routes } from "../../main";
 import { store } from "../../store/Store";
 

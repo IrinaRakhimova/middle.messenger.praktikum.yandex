@@ -8,13 +8,14 @@ import { Routes } from "../../main";
 import { store, StoreEvents } from "../../store/Store";
 
 export class ProfilePage extends Block {
+  private boundOnStoreUpdate: () => void;
+
   constructor() {
+    const AVATAR_BASE_URL = "https://ya-praktikum.tech/api/v2/resources";
     const user = store.getState().user;
 
-    // Define the base URL for user resources (avatars)
-    const AVATAR_BASE_URL = "https://ya-praktikum.tech/api/v2/resources";
+    console.log("[ProfilePage] constructor called. user =", user);
 
-    // Construct the full URL for the avatar, or use a placeholder if one doesn't exist
     const avatarUrl = user?.avatar
       ? `${AVATAR_BASE_URL}${user.avatar}`
       : "https://via.placeholder.com/150";
@@ -23,21 +24,18 @@ export class ProfilePage extends Block {
       label: "Изменить данные",
       onClick: () => this.changeToEdit(),
     });
-
     const passwordButton = new Button({
       label: "Изменить пароль",
       onClick: () => this.changeToPassword(),
     });
-
     const logoutButton = new Button({
       label: "Выйти",
       onClick: () => this.handleLogout(),
     });
 
     super({
-      // Pass the avatarUrl to your component's props
-      avatarUrl, 
-      displayName: user?.display_name || `${user?.first_name} ${user?.second_name}` || "Загрузка...",
+      avatarUrl,
+      displayName: user && user.display_name !== undefined ? user.display_name : "Загрузка...",
       email: user?.email || "",
       login: user?.login || "",
       firstName: user?.first_name || "",
@@ -47,62 +45,72 @@ export class ProfilePage extends Block {
       passwordButton,
       logoutButton,
     });
-    
-    // Subscribe to store updates to re-render the page
-    store.on(StoreEvents.UPDATED, this.onStoreUpdate.bind(this));
-  }
 
-  // Handle store updates
-  private onStoreUpdate(): void {
-    const user = store.getState().user;
-    const AVATAR_BASE_URL = "https://ya-praktikum.tech/api/v2/resources";
-    
-    if (user) {
-      // Re-generate the avatar URL based on the updated user object
-      const avatarUrl = user.avatar
-        ? `${AVATAR_BASE_URL}${user.avatar}`
-        : "https://via.placeholder.com/150";
+    this.boundOnStoreUpdate = this.onStoreUpdate.bind(this);
+    store.on(StoreEvents.UPDATED, this.boundOnStoreUpdate);
 
-      this.setProps({
-        // Update the avatarUrl prop
-        avatarUrl,
-        displayName: user.display_name || `${user.first_name} ${user.second_name}`,
-        email: user.email,
-        login: user.login,
-        firstName: user.first_name,
-        secondName: user.second_name,
-        phone: user.phone,
+    if (!user) {
+      console.log("[ProfilePage] No user in store. Fetching from API...");
+      authAPI.getUser().then((fetchedUser) => {
+        console.log("[ProfilePage] Fetched user from API:", fetchedUser);
+        store.setUser(fetchedUser);
       });
+    }
+
+    if (user) {
+      this.onStoreUpdate();
     }
   }
 
+  private onStoreUpdate(): void {
+    const user = store.getState().user;
+    console.log("[ProfilePage] onStoreUpdate called. user =", user);
+
+    const AVATAR_BASE_URL = "https://ya-praktikum.tech/api/v2/resources";
+    const avatarUrl = user?.avatar
+      ? `${AVATAR_BASE_URL}${user.avatar}`
+      : "https://via.placeholder.com/150";
+
+    this.setProps({
+      avatarUrl,
+      displayName: user && user.display_name !== undefined
+        ? user.display_name
+        : "Загрузка...",
+      email: user?.email || "",
+      login: user?.login || "",
+      firstName: user?.first_name || "",
+      secondName: user?.second_name || "",
+      phone: user?.phone || "",
+    });
+  }
   protected render(): string {
+    console.log("[ProfilePage] render called with props:", this.props);
     return template;
   }
-  
+
   protected componentWillUnmount(): void {
-    // Unsubscribe from the store to prevent memory leaks
-    store.off(StoreEvents.UPDATED, this.onStoreUpdate.bind(this));
+    console.log("[ProfilePage] componentWillUnmount called");
+    store.off(StoreEvents.UPDATED, this.boundOnStoreUpdate);
   }
 
-  // The rest of the methods remain the same
   private changeToEdit(): void {
-    console.log("Navigating to profile edit...");
+    console.log("[ProfilePage] Navigating to ProfileEdit");
+    Router.go(Routes.ProfileEdit);
   }
 
   private changeToPassword(): void {
-    console.log("Navigating to password change...");
+    console.log("[ProfilePage] Navigating to PasswordEdit");
+    Router.go(Routes.PasswordEdit);
   }
 
   private async handleLogout(): Promise<void> {
     try {
+      console.log("[ProfilePage] Logging out...");
       await authAPI.logout();
-      // Clear user data from the store on logout
       store.setUser(null);
-      console.log("Logout success");
       Router.go(Routes.Login);
     } catch (err) {
-      console.error("Logout failed", err);
+      console.error("[ProfilePage] Logout failed", err);
     }
   }
 }

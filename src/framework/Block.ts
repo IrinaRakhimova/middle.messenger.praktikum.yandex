@@ -4,7 +4,10 @@ import { EventBus } from "./EventBus";
 type BlockEvents = {
   init: [];
   "flow:render": [];
+  "flow:props-changed": [oldProps: any, newProps: any];
 };
+
+let _idCounter = 0;
 
 export abstract class Block<
   TProps extends Record<string, unknown> = Record<string, unknown>
@@ -12,6 +15,7 @@ export abstract class Block<
   static EVENTS = {
     INIT: "init",
     FLOW_RENDER: "flow:render",
+    FLOW_PROPS_CHANGED: "flow:props-changed",
   } as const;
 
   private _element: HTMLElement | null = null;
@@ -24,7 +28,10 @@ export abstract class Block<
     listener: EventListenerOrEventListenerObject;
   }> = [];
 
+  private _id: number;
+
   constructor(props: TProps) {
+    this._id = _idCounter++;
     this.props = props;
     this.eventBus = new EventBus<BlockEvents>();
     this.registerEvents();
@@ -33,23 +40,30 @@ export abstract class Block<
 
   private registerEvents(): void {
     this.eventBus.on(Block.EVENTS.INIT, this.init.bind(this));
-    this.eventBus.on(Block.EVENTS.FLOW_RENDER, this._render.bind(this));
+    this.eventBus.on(Block.EVENTS.FLOW_PROPS_CHANGED, this._render.bind(this));
   }
 
   private init(): void {
-    this.eventBus.emit(Block.EVENTS.FLOW_RENDER);
+    this.eventBus.emit(Block.EVENTS.FLOW_PROPS_CHANGED, {}, this.props);
   }
-  
 
-  private _render(): void {
+  public get id(): number {
+    return this._id;
+  }
+
+  private _render(oldProps: any, newProps: any): void {
+    if (this._element && !this.shouldComponentUpdate(oldProps, newProps)) {
+      return;
+    }
+
     this.removeEventListeners();
 
     const template = Handlebars.compile(this.render());
 
     const templateProps: Record<string, unknown> = {};
-    Object.entries(this.props || {}).forEach(([key, value]) => {
+    Object.entries(newProps || {}).forEach(([key, value]) => {
       if (value instanceof Block) {
-        templateProps[key] = `<div data-block="${key}"></div>`;
+        templateProps[key] = `<div data-block-id="${value.id}"></div>`;
       } else {
         templateProps[key] = value;
       }
@@ -58,22 +72,39 @@ export abstract class Block<
     const htmlString = template(templateProps);
     const temp = document.createElement("template");
     temp.innerHTML = htmlString.trim();
-    this._element = temp.content.firstElementChild as HTMLElement;
 
-    Object.entries(this.props || {}).forEach(([key, value]) => {
-      if (value instanceof Block) {
+    if (!this._element) {
+      this._element = temp.content.firstElementChild as HTMLElement;
+    } else {
+      this._element.innerHTML = temp.content.firstElementChild!.innerHTML;
+    }
+
+    Object.values(newProps || {}).forEach((child) => {
+      if (child instanceof Block) {
         const placeholder = this._element?.querySelector(
-          `[data-block="${key}"]`
+          `[data-block-id="${child.id}"]`
         );
-        const childContent = value.getContent();
-        if (placeholder && childContent) {
-          placeholder.replaceWith(childContent);
-          value.afterRender();
+        if (placeholder) {
+          const childContent = child.getContent();
+          if (childContent) {
+            placeholder.replaceWith(childContent);
+            child.afterRender();
+          }
         }
       }
     });
 
     this.afterRender();
+  }
+
+  protected getChildren(): Record<string, Block> {
+    const children: Record<string, Block> = {};
+    Object.entries(this.props).forEach(([key, value]) => {
+      if (value instanceof Block) {
+        children[key] = value;
+      }
+    });
+    return children;
   }
 
   public getContent(): HTMLElement | null {
@@ -82,7 +113,7 @@ export abstract class Block<
 
   protected abstract render(): string;
 
-  public afterRender(): void {}
+  public afterRender(): void { }
 
   protected addEventListener<K extends keyof HTMLElementEventMap>(
     element: Element,
@@ -100,26 +131,23 @@ export abstract class Block<
     this._listeners = [];
   }
 
-  protected componentWillUnmount(): void {}
+  protected componentWillUnmount(): void { }
 
   public destroy(): void {
     this.componentWillUnmount();
     this.removeEventListeners();
 
-    Object.values(this.props || {}).forEach((value) => {
-      if (value instanceof Block) {
-        value.destroy();
-      }
-    });
+    Object.values(this.getChildren()).forEach((child) => child.destroy());
 
     this._element = null;
   }
 
   public setProps(nextProps: Partial<TProps>): void {
-  if (!nextProps) return;
-  this.props = { ...this.props, ...nextProps };
-  this.eventBus.emit(Block.EVENTS.FLOW_RENDER);
-}
+    if (!nextProps) return;
+    const oldProps = { ...this.props };
+    this.props = { ...this.props, ...nextProps };
+    this.eventBus.emit(Block.EVENTS.FLOW_PROPS_CHANGED, oldProps, this.props);
+  }
 
   public hide(): void {
     const el = this.getContent();
@@ -129,5 +157,22 @@ export abstract class Block<
   public show(): void {
     const el = this.getContent();
     if (el) el.style.display = "";
+  }
+
+  protected shouldComponentUpdate(oldProps: TProps, newProps: TProps): boolean {
+    const oldKeys = Object.keys(oldProps);
+    const newKeys = Object.keys(newProps);
+
+    if (oldKeys.length !== newKeys.length) {
+      return true;
+    }
+
+    for (const key of oldKeys) {
+      if (!(oldProps[key] instanceof Block) && oldProps[key] !== newProps[key]) {
+        return true;
+      }
+    }
+
+    return false;
   }
 }

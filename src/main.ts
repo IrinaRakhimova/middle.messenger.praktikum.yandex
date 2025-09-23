@@ -24,8 +24,16 @@ export enum Routes {
 
 window.addEventListener("DOMContentLoaded", async () => {
   let isProtectedRoute = true;
-  
-  // Set up all the routes
+  let isAuthPage = false;
+
+  switch (window.location.pathname) {
+    case Routes.Login:
+    case Routes.Register:
+      isProtectedRoute = false;
+      isAuthPage = true;
+      break;
+  }
+
   Router.use(Routes.Index, LoginPage)
     .use(Routes.Login, LoginPage)
     .use(Routes.Register, RegisterPage)
@@ -36,30 +44,22 @@ window.addEventListener("DOMContentLoaded", async () => {
     .use(Routes.Error400, NotFoundPage)
     .use(Routes.Error500, ServerErrorPage);
 
-  // Check the current path and determine if it's a protected route
-  switch (window.location.pathname) {
-    case Routes.Login:
-    case Routes.Register:
-      isProtectedRoute = false;
-      break;
-  }
-
   try {
-    // Attempt to get the user information
     const user = await authAPI.getUser();
     store.setUser(user);
 
-    // If the user is logged in, redirect them to chats if they're on a public page
-    if (!isProtectedRoute) {
+    if (isAuthPage) {
       Router.go(Routes.Chats);
+      return;
     }
   } catch (err) {
-    // If the user is not logged in, redirect to the login page if they're on a protected page
+    store.setUser(null);
+
     if (isProtectedRoute) {
       Router.go(Routes.Login);
+      return;
     }
   }
 
-  // Start the router
   Router.start();
 });
