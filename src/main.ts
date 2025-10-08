@@ -34,7 +34,7 @@ window.addEventListener("DOMContentLoaded", async () => {
       break;
   }
 
-  Router.use(Routes.Index, LoginPage)
+  Router.use(Routes.Index, ChatsPage)
     .use(Routes.Login, LoginPage)
     .use(Routes.Register, RegisterPage)
     .use(Routes.Profile, ProfilePage)

@@ -14,11 +14,29 @@ export type UserUpdateRequest = {
   phone: string;
 };
 
+export type PasswordUpdateRequest = {
+  oldPassword: string;
+  newPassword: string;
+};
+
 class UserAPI {
   async updateProfile(data: UserUpdateRequest): Promise<UserResponse> {
     return (await userAPIInstance.put("/profile", {
       data,
     })) as Promise<UserResponse>;
+  }
+
+  async updateAvatar(data: FormData): Promise<UserResponse> {
+    return (await userAPIInstance.put("/profile/avatar", {
+      data,
+      headers: {},
+    })) as Promise<UserResponse>;
+  }
+
+  async updatePassword(data: PasswordUpdateRequest): Promise<void> {
+    await userAPIInstance.put("/password", {
+      data,
+    });
   }
 }
 

@@ -1,30 +1,23 @@
 <main class="chat-layout">
-  <aside class="sidebar">
-    <div class="sidebar-header">
-      <a href="/profile"><p class="back">Профиль ></p></a>
-      <div class="chat-search-wrapper">
-        <input
-          type="text"
-          id="chat-search"
-          placeholder="Поиск"
-          class="chat-search"
-        />
-      </div>
-    </div>
-    <ul class="chat-list">
-      {{{chatList}}}
-    </ul>
-  </aside>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <a href="/profile" class="back-link">
+                <p class="back">Профиль ></p>
+            </a>
+            <div class="chat-search-wrapper">
+                <input type="text" id="chat-search" placeholder="Поиск" class="chat-search" />
+            </div>
+        </div>
 
-  <section class="chat-window">
-    <div class="chat-header-container">
-    </div>
-    <div class="messages" id="messages">
-      {{{messageList}}}
-    </div>
-    <form id="chat-form">
-      {{{messageInput}}}
-      {{{sendButton}}}
-    </form>
-  </section>
+        <ul class="chat-list">
+            {{{chatList}}}
+        </ul>
+    </aside>
+
+    <section class="chat-window">
+        <div id="dynamic-content-area" class="dynamic-content-area">
+        </div>
+    </section>
 </main>
+
+{{{modal}}}

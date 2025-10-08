@@ -6,6 +6,7 @@ import { authAPI } from "../../api/authAPI";
 import Router from "../../utils/Router";
 import { Routes } from "../../main";
 import { store, StoreEvents } from "../../store/Store";
+import { userAPI } from "../../api/userAPI";
 
 export class ProfilePage extends Block {
   private boundOnStoreUpdate: () => void;
@@ -57,6 +58,7 @@ export class ProfilePage extends Block {
       });
     }
 
+
     if (user) {
       this.onStoreUpdate();
     }
@@ -87,7 +89,27 @@ export class ProfilePage extends Block {
     console.log("[ProfilePage] render called with props:", this.props);
     return template;
   }
+  public afterRender(): void {
+    const avatarInput = this.getContent()?.querySelector<HTMLInputElement>("#avatarInput");
 
+    if (avatarInput) {
+      this.addEventListener(avatarInput, "change", async () => {
+        if (avatarInput.files && avatarInput.files[0]) {
+          const formData = new FormData();
+          formData.append("avatar", avatarInput.files[0]);
+
+          try {
+            await userAPI.updateAvatar(formData);
+
+            const freshUser = await authAPI.getUser();
+            store.setUser(freshUser);
+          } catch (err) {
+            console.error("[ProfilePage] Failed to update avatar:", err);
+          }
+        }
+      });
+    }
+  }
   protected componentWillUnmount(): void {
     console.log("[ProfilePage] componentWillUnmount called");
     store.off(StoreEvents.UPDATED, this.boundOnStoreUpdate);

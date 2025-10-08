@@ -4,6 +4,7 @@ import { Input } from "../../components/input/input";
 import { Button } from "../../components/button/button";
 import "./password-edit.css";
 import { validateField } from "../../utils/validation";
+import { userAPI } from "../../api/userAPI";
 
 export class PasswordEditPage extends Block {
   private oldPasswordInput: Input;
@@ -30,17 +31,16 @@ export class PasswordEditPage extends Block {
       label: "Повторите новый пароль",
       value: "",
     });
-    const saveButton = new Button({   
+    const saveButton = new Button({
       label: "Сохранить",
       type: "submit",
-      onClick: () => this.handleSave(),
     });
 
     super({
-      oldPasswordInput: oldPasswordInput.getContent()?.outerHTML,
-      newPasswordInput: newPasswordInput.getContent()?.outerHTML,
-      confirmPasswordInput: confirmPasswordInput.getContent()?.outerHTML,
-      saveButton: saveButton.getContent()?.outerHTML,
+      oldPasswordInput,
+      newPasswordInput,
+      confirmPasswordInput,
+      saveButton,
     });
 
     this.oldPasswordInput = oldPasswordInput;
@@ -87,10 +87,8 @@ export class PasswordEditPage extends Block {
   }
 
   protected componentWillUnmount(): void {
-    // eslint-disable-next-line no-console
-    console.log("PasswordEditPage is being destroyed");
   }
-  private handleSave(): void {
+  private async handleSave(): Promise<void> {
     const form = this.getContent()?.querySelector<HTMLFormElement>(
       "#password-edit-form"
     );
@@ -125,11 +123,30 @@ export class PasswordEditPage extends Block {
     }
 
     if (!isValid) {
-      // eslint-disable-next-line no-console
       console.warn("Validation failed");
       return;
     }
-    // eslint-disable-next-line no-console
-    console.log("Change password:", data);
+
+    try {
+      await userAPI.updatePassword({
+        oldPassword: data.oldPassword,
+        newPassword: data.newPassword,
+      });
+
+      alert("Пароль успешно изменён!");
+      form?.reset();
+    } catch (err: any) {
+      console.error("Failed to change password:", err);
+
+      if (err.reason === "Password is incorrect") {
+        const oldPasswordInput = form?.querySelector<HTMLInputElement>(
+          'input[name="oldPassword"]'
+        );
+        oldPasswordInput?.setCustomValidity("Неверный старый пароль");
+        oldPasswordInput?.reportValidity();
+      } else {
+        alert("Произошла ошибка. Попробуйте позже.");
+      }
+    }
   }
 }

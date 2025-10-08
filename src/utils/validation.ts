@@ -9,7 +9,7 @@ export function validateField(name: string, value: string): ValidationResult {
     email: /^[a-zA-Z0-9._-]+@[a-zA-Z]+\.[a-zA-Z]+$/,
     password: /^(?=.*[A-Z])(?=.*\d).{8,40}$/,
     phone: /^\+?\d{10,15}$/,
-    message: /.+/,
+    message: /^(?!\s*$).+$/,
     oldPassword: /^(?=.*[A-Z])(?=.*\d).{8,40}$/,
     newPassword: /^(?=.*[A-Z])(?=.*\d).{8,40}$/,
   };

@@ -130,11 +130,37 @@ export class ProfileEditPage extends Block {
         this.handleSave();
       });
     }
-  }
 
-  protected componentWillUnmount(): void {
-    // eslint-disable-next-line no-console
-    console.log("ProfileEditPage will unmount");
+    const avatarInput = this.getContent()?.querySelector<HTMLInputElement>(
+      "#avatarInput"
+    );
+    if (avatarInput) {
+      this.addEventListener(avatarInput, "change", async () => {
+        const file = avatarInput.files?.[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append("avatar", file);
+
+        try {
+          const updatedUser = await userAPI.updateAvatar(formData);
+
+          store.setUser(updatedUser);
+
+          const avatarImg = this.getContent()?.querySelector<HTMLImageElement>(
+            ".avatar-image"
+          );
+          if (avatarImg) {
+            const baseUrl = "https://ya-praktikum.tech/api/v2/resources";
+            avatarImg.src = updatedUser.avatar
+              ? `${baseUrl}${updatedUser.avatar}`
+              : "https://via.placeholder.com/150";
+          }
+        } catch (err) {
+          console.error("Failed to update avatar:", err);
+        }
+      });
+    }
   }
 
   private async handleSave(): Promise<void> {
