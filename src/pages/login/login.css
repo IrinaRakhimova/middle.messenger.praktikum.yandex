@@ -41,3 +41,7 @@ p {
   line-height: 11px;
   color: rgba(51, 105, 243, 1);
 }
+
+.back {
+  text-align: left;
+}

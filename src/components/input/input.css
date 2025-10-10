@@ -2,6 +2,7 @@
   position: relative;
   margin-bottom: 1rem;
   width: 70%;
+  overflow: hidden;
 }
 
 .input-group input {
@@ -39,4 +40,14 @@
 
 input:invalid {
   border-color: red;
+}
+
+.error-message {
+  font-family: Inter, sans-serif;
+  font-size: 11px;
+  line-height: 13px;
+  color: #e53935;
+  min-height: 14px;
+  margin-top: 2px;
+  padding-left: 2px;
 }

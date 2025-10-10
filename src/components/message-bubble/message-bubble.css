@@ -32,9 +32,16 @@
 }
 
 .tick {
-  color: #4fc3f7; 
+  color: #4fc3f7;
 }
 
 .bubble-text {
   margin-bottom: 10px;
+  font-size: 15px;
+  color: black;
+}
+
+.bubble-time {
+  font-size: 10px;
+  color: gray;
 }

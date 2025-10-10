@@ -30,7 +30,7 @@ export class ProfileEditPage extends Block {
     const AVATAR_BASE_URL = "https://ya-praktikum.tech/api/v2/resources";
     const avatarUrl = user.avatar
       ? `${AVATAR_BASE_URL}${user.avatar}`
-      : "https://via.placeholder.com/150";
+      : "/Avatar.png";
 
     const emailInput = new Input({
       type: "email",
@@ -154,11 +154,18 @@ export class ProfileEditPage extends Block {
             const baseUrl = "https://ya-praktikum.tech/api/v2/resources";
             avatarImg.src = updatedUser.avatar
               ? `${baseUrl}${updatedUser.avatar}`
-              : "https://via.placeholder.com/150";
+              : "/Avatar.png";
           }
         } catch (err) {
           console.error("Failed to update avatar:", err);
         }
+      });
+    }
+    const backLink = this.getContent()?.querySelector<HTMLAnchorElement>(".back a");
+    if (backLink) {
+      this.addEventListener(backLink, "click", (e) => {
+        e.preventDefault();
+        window.history.back();
       });
     }
   }

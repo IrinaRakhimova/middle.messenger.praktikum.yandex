@@ -20,7 +20,6 @@ export class ChatWebSocket {
     );
 
     this.socket.addEventListener("open", () => {
-      console.log("WS connected to chat", this.chatId);
       this.send({ type: "get old", content: "0" });
       this.pingInterval = window.setInterval(() => {
         this.send({ type: "ping" });

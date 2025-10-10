@@ -78,6 +78,14 @@ export class LoginPage extends Block {
         this.handleSubmit(loginEl, passwordEl);
       });
     }
+
+    const backLink = this.getContent()?.querySelector<HTMLAnchorElement>(".back a");
+    if (backLink) {
+      this.addEventListener(backLink, "click", (e) => {
+        e.preventDefault();
+        window.history.back();
+      });
+    }
   }
 
   private async handleSubmit(

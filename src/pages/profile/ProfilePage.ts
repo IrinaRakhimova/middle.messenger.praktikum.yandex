@@ -19,7 +19,7 @@ export class ProfilePage extends Block {
 
     const avatarUrl = user?.avatar
       ? `${AVATAR_BASE_URL}${user.avatar}`
-      : "https://via.placeholder.com/150";
+      : "/Avatar.png";
 
     const editButton = new Button({
       label: "Изменить данные",
@@ -71,7 +71,7 @@ export class ProfilePage extends Block {
     const AVATAR_BASE_URL = "https://ya-praktikum.tech/api/v2/resources";
     const avatarUrl = user?.avatar
       ? `${AVATAR_BASE_URL}${user.avatar}`
-      : "https://via.placeholder.com/150";
+      : "/Avatar.png";
 
     this.setProps({
       avatarUrl,
@@ -107,6 +107,13 @@ export class ProfilePage extends Block {
             console.error("[ProfilePage] Failed to update avatar:", err);
           }
         }
+      });
+    }
+    const backLink = this.getContent()?.querySelector<HTMLAnchorElement>(".back a");
+    if (backLink) {
+      this.addEventListener(backLink, "click", (e) => {
+        e.preventDefault();
+        window.history.back();
       });
     }
   }

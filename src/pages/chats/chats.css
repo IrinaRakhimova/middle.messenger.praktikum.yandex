@@ -183,6 +183,8 @@ form button {
   color: white;
   border-radius: 6px;
   cursor: pointer;
+  margin: 10px 10px 10px 100px;
+  width: 80px;
 }
 
 .chat-users-modal {
@@ -208,7 +210,7 @@ form button {
   list-style: none;
   padding: 0;
   margin: 0;
-  max-height: 250px;
+  max-height: 300px;
   overflow-y: auto;
   border: 1px solid #eee;
   border-radius: 8px;
@@ -226,7 +228,6 @@ form button {
   border-bottom: none;
 }
 
-
 .chat-user-name {
   font-weight: 500;
   color: #222;
@@ -235,8 +236,29 @@ form button {
 .chat-user-id {
   font-size: 0.85rem;
   color: #888;
+  margin-left: 8px;
 }
 
+.remove-user-btn {
+  background-color: #ff4d4f;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin: 5px;
+  width: 80px;
+}
+
+.remove-user-btn:hover {
+  background-color: #d9363e;
+}
+
+.remove-user-btn:active {
+  transform: scale(0.97);
+}
 
 .chat-users-list::-webkit-scrollbar {
   width: 6px;
@@ -245,4 +267,20 @@ form button {
 .chat-users-list::-webkit-scrollbar-thumb {
   background: #ccc;
   border-radius: 3px;
+}
+
+.chat-user-self {
+  font-size: 0.8rem;
+  color: #999;
+  margin-left: 5px;
+}
+
+.remove-user-btn[disabled] {
+  display: none;
+}
+
+button.disabled-btn {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
 }

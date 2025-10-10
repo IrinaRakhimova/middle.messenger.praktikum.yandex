@@ -34,3 +34,7 @@ a {
   text-align: center;
   color: rgba(51, 105, 243, 1);
 }
+
+.back {
+  text-align: left;
+}

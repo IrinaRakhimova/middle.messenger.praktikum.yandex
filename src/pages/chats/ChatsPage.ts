@@ -6,7 +6,6 @@ import { Button } from "../../components/button/button";
 import { Modal } from "../../components/modal/modal";
 import { MessageBubble } from "../../components/message-bubble/message-bubble";
 import "./chats.css";
-import { validateField } from "../../utils/validation";
 import { ChatWebSocket } from "../../api/chatWebSocket";
 import { chatsAPI } from "../../api/chatsAPI";
 
@@ -41,7 +40,7 @@ export class ChatsPage extends Block {
 
     const sendButton = new Button({
       label: "Send",
-      onClick: () => this.handleSend(),
+      type: "submit",
     });
 
     super({ chatList: "", messageList: "" });
@@ -171,11 +170,13 @@ export class ChatsPage extends Block {
 
     const addUserButton = new Button({
       label: "➕ Добавить",
+      type: "button",
       onClick: () => this.openAddUsersModal(),
     });
 
     const viewUsersButton = new Button({
       label: "👥 Пользователи",
+      type: "button",
       onClick: () => {
         if (this.currentChatId) this.openUsersModal(this.currentChatId);
       },
@@ -201,35 +202,45 @@ export class ChatsPage extends Block {
     this.messageInput.afterRender?.();
     this.sendButton.afterRender?.();
 
+    dynamicContentArea.appendChild(form);
+
     this.addEventListener(form, "submit", (e) => {
       e.preventDefault();
       this.handleSend();
     });
+    const inputEl = this.messageInput.getContent()?.querySelector("input[name='message']") as HTMLInputElement;
+    const sendBtnEl = this.sendButton.getContent()?.querySelector("button") as HTMLButtonElement;
 
-    dynamicContentArea.appendChild(form);
+    if (inputEl && sendBtnEl) {
+      inputEl.addEventListener("input", () => {
+        const value = inputEl.value.trim();
+        if (value) {
+          sendBtnEl.disabled = false;
+          sendBtnEl.classList.remove("disabled-btn");
+          inputEl.setCustomValidity("");
+        } else {
+          sendBtnEl.disabled = true;
+          sendBtnEl.classList.add("disabled-btn");
+          inputEl.setCustomValidity("Введите сообщение");
+        }
+      });
+    }
   }
-
   private handleSend(): void {
     const inputEl = this.messageInput.getContent()?.querySelector("input[name='message']") as HTMLInputElement;
-    const value = inputEl?.value.trim() || "";
+    if (!inputEl) return;
 
-    const { valid, error } = validateField("message", value);
-    if (!valid) {
-      inputEl?.classList.add("input-error");
-      inputEl?.setCustomValidity(error || "Ошибка");
-      inputEl?.reportValidity();
-      return;
-    }
+    const value = inputEl.value.trim();
+    if (!value) return;
 
-    inputEl?.classList.remove("input-error");
-    inputEl?.setCustomValidity("");
-
-    if (value && this.chatWS && this.currentChatId) {
+    if (this.chatWS && this.currentChatId) {
       this.chatWS.sendMessage(value);
     }
 
-    if (inputEl) inputEl.value = "";
+    inputEl.value = "";
+    inputEl.dispatchEvent(new Event("input"));
   }
+
 
   private addMessage(msg: ChatMessage): void {
     const messageList = this.getContent()?.querySelector("#messages");
@@ -238,8 +249,9 @@ export class ChatsPage extends Block {
     const isIncoming = msg.user_id !== this.currentUserId;
 
     const bubble = new MessageBubble({
-      text: msg.content,
       time: new Date(msg.time).toLocaleTimeString(),
+      text: msg.content,
+
       incoming: isIncoming,
     });
 
@@ -253,37 +265,74 @@ export class ChatsPage extends Block {
     try {
       const users = await chatsAPI.getChatUsers(chatId);
 
-      const modalContent = `
-      <div class="chat-users-modal">
-        <h3 class="chat-users-title">
-          Пользователи чата "<span class="chat-title-name">${this.currentChat?.title}</span>"
-        </h3>
-        <ul class="chat-users-list">
-          ${users
-          .map(
-            (u) => `
-              <li class="chat-user-item">
-                <span class="chat-user-name">${u.display_name || u.login}</span>
-                <span class="chat-user-id">ID: ${u.id}</span>
-              </li>`
-          )
+      if (!this.currentUserId) {
+        const meRes = await fetch("https://ya-praktikum.tech/api/v2/auth/user", {
+          credentials: "include",
+        });
+        const me = await meRes.json();
+        this.currentUserId = me.id;
+      }
+
+      const modalContent = document.createElement("div");
+      modalContent.classList.add("chat-users-modal");
+
+      modalContent.innerHTML = `
+      <h3 class="chat-users-title">
+        Пользователи чата "<span class="chat-title-name">${this.currentChat?.title}</span>"
+      </h3>
+      <ul class="chat-users-list">
+        ${users
+          .map((u) => {
+            const isSelf = u.id === this.currentUserId;
+            return `
+              <li class="chat-user-item" data-user-id="${u.id}">
+                <div>
+                  <span class="chat-user-name">${u.display_name || u.login}</span>
+                  <span class="chat-user-id">ID: ${u.id}</span>
+                  ${isSelf ? `<span class="chat-user-self">(Вы)</span>` : ""}
+                </div>
+                ${!isSelf
+                ? `<button class="remove-user-btn" data-user-id="${u.id}">Удалить</button>`
+                : `<button class="remove-user-btn" disabled style="opacity: 0.5; cursor: not-allowed;">Удалить</button>`
+              }
+              </li>`;
+          })
           .join("")}
-        </ul>
-      </div>
+      </ul>
     `;
 
       const modal = new Modal({
-        content: modalContent,
+        content: modalContent.outerHTML,
         onClose: () => console.log("Users modal closed"),
       });
 
       modal.show();
+
+      setTimeout(() => {
+        document.querySelectorAll(".remove-user-btn:not([disabled])").forEach((btn) => {
+          btn.addEventListener("click", async (e) => {
+            const target = e.currentTarget as HTMLButtonElement;
+            const userId = Number(target.dataset.userId);
+            if (!userId) return;
+
+            if (confirm("Удалить пользователя из чата?")) {
+              try {
+                await chatsAPI.removeUsers(chatId, [userId]);
+                target.closest(".chat-user-item")?.remove();
+              } catch (err) {
+                console.error("Ошибка при удалении пользователя:", err);
+                alert("Не удалось удалить пользователя");
+              }
+            }
+          });
+        });
+      }, 0);
     } catch (error) {
       console.error("Ошибка при получении пользователей чата:", error);
     }
   }
 
-  private openAddUsersModal(): void {
+  private async openAddUsersModal(): Promise<void> {
     const searchInput = new Input({
       type: "text",
       name: "user-search",
@@ -294,9 +343,13 @@ export class ChatsPage extends Block {
     resultsList.id = "user-search-results";
     resultsList.classList.add("user-search-results");
 
+    const infoMessage = document.createElement("p");
+    infoMessage.classList.add("user-search-message");
+    infoMessage.textContent = "Введите что-нибудь для поиска";
+
     const modal = new Modal({
       content: "",
-      onClose: () => console.log("Add users modal closed"),
+      onClose: () => console.log("Add/remove users modal closed"),
     });
 
     modal.show();
@@ -305,8 +358,12 @@ export class ChatsPage extends Block {
     if (!modalContent) return;
 
     modalContent.appendChild(searchInput.getContent()!);
+    modalContent.appendChild(infoMessage);
     modalContent.appendChild(resultsList);
     searchInput.afterRender?.();
+
+    const currentUsers = await chatsAPI.getChatUsers(this.currentChatId!);
+    const currentUserIds = currentUsers.map((u: any) => u.id);
 
     let debounceTimer: number | undefined;
     const debounce = (fn: (...args: any[]) => void, delay: number) => {
@@ -323,43 +380,102 @@ export class ChatsPage extends Block {
         const value = (e.target as HTMLInputElement).value.trim();
         if (!value) {
           resultsList.innerHTML = "";
+          infoMessage.textContent = "Введите что-нибудь для поиска";
+          infoMessage.style.display = "block";
           return;
         }
 
         try {
           const users = await chatsAPI.searchUsers(value);
-          if (!Array.isArray(users)) return;
+          if (!Array.isArray(users) || users.length === 0) {
+            resultsList.innerHTML = "";
+            infoMessage.textContent = "Пользователи не найдены";
+            infoMessage.style.display = "block";
+            return;
+          }
+
+          infoMessage.style.display = "none";
 
           resultsList.innerHTML = users
-            .map(
-              (u) => `
-            <li data-id="${u.id}" class="user-result">
-              ${u.display_name || u.login}
-              <button class="add-user-btn" data-id="${u.id}">Добавить</button>
-            </li>`
-            )
+            .map((u) => {
+              const isInChat = currentUserIds.includes(u.id);
+              const isMe = u.id === this.currentUserId;
+              const buttonLabel = isMe
+                ? "Вы"
+                : isInChat
+                  ? "Удалить"
+                  : "Добавить";
+
+              const buttonClass = isMe
+                ? "disabled-btn"
+                : isInChat
+                  ? "remove-user-btn"
+                  : "add-user-btn";
+
+              return `
+              <li data-id="${u.id}" class="user-result">
+                <span class="user-result-name">${u.display_name || u.login}</span>
+                <button 
+                  class="${buttonClass}" 
+                  data-id="${u.id}" 
+                  ${isMe ? "disabled" : ""}>
+                  ${buttonLabel}
+                </button>
+              </li>`;
+            })
             .join("");
 
           resultsList.querySelectorAll(".add-user-btn").forEach((btn) => {
             btn.addEventListener("click", async (ev) => {
               const id = Number((ev.target as HTMLElement).getAttribute("data-id"));
               if (this.currentChatId && id) {
-                await chatsAPI.addUsers(this.currentChatId, [id]);
-                alert("Пользователь добавлен!");
-                modal.close();
+                try {
+                  await chatsAPI.addUsers(this.currentChatId, [id]);
+                  alert("Пользователь добавлен!");
+                  (ev.target as HTMLElement).textContent = "Удалить";
+                  (ev.target as HTMLElement).classList.remove("add-user-btn");
+                  (ev.target as HTMLElement).classList.add("remove-user-btn");
+                  currentUserIds.push(id);
+                } catch (err) {
+                  console.error("Ошибка добавления пользователя:", err);
+                }
+              }
+            });
+          });
+
+          resultsList.querySelectorAll(".remove-user-btn").forEach((btn) => {
+            btn.addEventListener("click", async (ev) => {
+              const id = Number((ev.target as HTMLElement).getAttribute("data-id"));
+              if (this.currentChatId && id) {
+                if (confirm("Удалить пользователя из чата?")) {
+                  try {
+                    await chatsAPI.removeUsers(this.currentChatId, [id]);
+                    alert("Пользователь удалён!");
+                    (ev.target as HTMLElement).textContent = "Добавить";
+                    (ev.target as HTMLElement).classList.remove("remove-user-btn");
+                    (ev.target as HTMLElement).classList.add("add-user-btn");
+                    const idx = currentUserIds.indexOf(id);
+                    if (idx !== -1) currentUserIds.splice(idx, 1);
+                  } catch (err) {
+                    console.error("Ошибка удаления пользователя:", err);
+                  }
+                }
               }
             });
           });
         } catch (err) {
           console.error("Ошибка поиска:", err);
+          resultsList.innerHTML = "";
+          infoMessage.textContent = "Ошибка при поиске пользователей";
+          infoMessage.style.display = "block";
         }
       }, 400)
     );
   }
-
   private bindCreateChatButton(): void {
     const createChatBtn = new Button({
       label: "Создать чат",
+      type: "button",
       onClick: () => this.openCreateChatModal(),
     });
 
@@ -374,6 +490,7 @@ export class ChatsPage extends Block {
     const input = new Input({ type: "text", name: "chat-title", label: "Название чата" });
     const confirmButton = new Button({
       label: "Создать",
+      type: "button",
       onClick: async () => {
         const inputEl = input.getContent()?.querySelector("input[name='chat-title']") as HTMLInputElement;
         const title = inputEl?.value.trim();
@@ -391,18 +508,15 @@ export class ChatsPage extends Block {
       },
     });
 
-    const contentContainer = document.createElement("div");
-    contentContainer.appendChild(input.getContent()!);
-    contentContainer.appendChild(confirmButton.getContent()!);
-
     const modal = new Modal({ content: "" });
     modal.show();
+
     const modalContent = modal.getContent()?.querySelector(".modal-content");
     if (modalContent) {
       modalContent.appendChild(input.getContent()!);
       modalContent.appendChild(confirmButton.getContent()!);
+      input.afterRender?.();
+      confirmButton.afterRender?.();
     }
-    input.afterRender?.();
-    confirmButton.afterRender?.();
   }
 }

@@ -1,5 +1,5 @@
 <main>
-  <p><a href="/">← Назад к меню</a></p>
+  <p class="back"><a href="/">← Назад</a></p>
   <div class="profile-page">
     <div class="container">
       <div class="avatar-wrapper">
@@ -11,12 +11,24 @@
 
     <h1>{{displayName}}</h1>
     <ul class="profile-info">
-      <li><strong>Почта</strong><p>{{email}}</p></li>
-      <li><strong>Логин</strong><p>{{login}}</p></li>
-      <li><strong>Имя</strong><p>{{firstName}}</p></li>
-      <li><strong>Фамилия</strong><p>{{secondName}}</p></li>
-      <li><strong>Имя в чате</strong><p>{{displayName}}</p></li>
-      <li class="last-li"><strong>Телефон</strong><p>{{phone}}</p></li>
+      <li><strong>Почта</strong>
+        <p class="profile-info-text">{{email}}</p>
+      </li>
+      <li><strong>Логин</strong>
+        <p class="profile-info-text">{{login}}</p>
+      </li>
+      <li><strong>Имя</strong>
+        <p class="profile-info-text">{{firstName}}</p>
+      </li>
+      <li><strong>Фамилия</strong>
+        <p class="profile-info-text">{{secondName}}</p>
+      </li>
+      <li><strong>Имя в чате</strong>
+        <p class="profile-info-text">{{displayName}}</p>
+      </li>
+      <li class="last-li"><strong>Телефон</strong>
+        <p class="profile-info-text">{{phone}}</p>
+      </li>
     </ul>
 
     <div class="profile-actions">

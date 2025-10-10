@@ -4,6 +4,7 @@ import "./button.css";
 
 interface ButtonProps {
   label: string;
+  type?: "button" | "submit" | "reset";
   onClick?: () => void;
   [key: string]: unknown;
 }
@@ -13,13 +14,9 @@ export class Button extends Block<ButtonProps> {
     this.props.onClick?.();
   };
 
-  constructor(props: ButtonProps) {
-    super(props);
-  }
-
   public afterRender(): void {
     const el = this.getContent();
-    if (el) {
+    if (el && this.props.onClick) {
       this.addEventListener(el, "click", this.handleClick);
     }
   }

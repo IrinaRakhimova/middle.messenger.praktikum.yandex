@@ -121,6 +121,13 @@ export class RegisterPage extends Block {
       e.preventDefault();
       this.handleSubmit();
     });
+    const backLink = this.getContent()?.querySelector<HTMLAnchorElement>(".back a");
+    if (backLink) {
+      this.addEventListener(backLink, "click", (e) => {
+        e.preventDefault();
+        window.history.back();
+      });
+    }
   }
 
   private validateInput(input: HTMLInputElement): boolean {

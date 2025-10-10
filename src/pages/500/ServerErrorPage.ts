@@ -16,6 +16,7 @@ export class ServerErrorPage extends Block {
     if (backLink) {
       this.addEventListener(backLink, "click", (e) => {
         e.preventDefault();
+        window.history.back();
       });
     }
   }
