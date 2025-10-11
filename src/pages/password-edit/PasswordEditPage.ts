@@ -84,6 +84,14 @@ export class PasswordEditPage extends Block {
         this.handleSave();
       });
     }
+
+    const backLink = this.getContent()?.querySelector<HTMLAnchorElement>(".back a");
+    if (backLink) {
+      this.addEventListener(backLink, "click", (e) => {
+        e.preventDefault();
+        window.history.back();
+      });
+    }
   }
 
   protected componentWillUnmount(): void {
