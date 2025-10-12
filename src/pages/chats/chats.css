@@ -154,12 +154,6 @@ form button {
   cursor: pointer;
 }
 
-.chat-users-list {
-  list-style: none;
-  justify-content: center;
-  align-items: center;
-}
-
 .user-search-results {
   margin-top: 15px;
   list-style: none;
