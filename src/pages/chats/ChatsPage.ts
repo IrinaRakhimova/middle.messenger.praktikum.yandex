@@ -155,7 +155,9 @@ export class ChatsPage extends Block {
     if (!this.currentChatId || !this.currentChat) {
       const noChatDiv = document.createElement("div");
       noChatDiv.classList.add("no-chat-selected");
-      noChatDiv.innerHTML = "<p>Чат не выбран</p>";
+      const p = document.createElement("p");
+      p.textContent = "Чат не выбран";
+      noChatDiv.appendChild(p);
       dynamicContentArea.appendChild(noChatDiv);
       return;
     }
@@ -163,7 +165,9 @@ export class ChatsPage extends Block {
     const chatHeader = document.createElement("div");
     chatHeader.classList.add("chat-header");
     chatHeader.id = "chat-title";
-    chatHeader.innerHTML = `<span>${this.currentChat.title}</span>`;
+    const span = document.createElement("span");
+    span.textContent = this.currentChat.title;
+    chatHeader.appendChild(span);
 
     const headerButtons = document.createElement("div");
     headerButtons.classList.add("chat-header-buttons");
@@ -276,30 +280,62 @@ export class ChatsPage extends Block {
       const modalContent = document.createElement("div");
       modalContent.classList.add("chat-users-modal");
 
-      modalContent.innerHTML = `
-      <h3 class="chat-users-title">
-        Пользователи чата "<span class="chat-title-name">${this.currentChat?.title}</span>"
-      </h3>
-      <ul class="chat-users-list">
-        ${users
-          .map((u) => {
-            const isSelf = u.id === this.currentUserId;
-            return `
-              <li class="chat-user-item" data-user-id="${u.id}">
-                <div>
-                  <span class="chat-user-name">${u.display_name || u.login}</span>
-                  <span class="chat-user-id">ID: ${u.id}</span>
-                  ${isSelf ? `<span class="chat-user-self">(Вы)</span>` : ""}
-                </div>
-                ${!isSelf
-                ? `<button class="remove-user-btn" data-user-id="${u.id}">Удалить</button>`
-                : `<button class="remove-user-btn" disabled style="opacity: 0.5; cursor: not-allowed;">Удалить</button>`
-              }
-              </li>`;
-          })
-          .join("")}
-      </ul>
-    `;
+      modalContent.innerHTML = "";
+
+      const title = document.createElement("h3");
+      title.classList.add("chat-users-title");
+      title.textContent = `Пользователи чата "${this.currentChat?.title || ""}"`;
+      modalContent.appendChild(title);
+
+      const list = document.createElement("ul");
+      list.classList.add("chat-users-list");
+
+      users.forEach((u) => {
+        const isSelf = u.id === this.currentUserId;
+
+        const li = document.createElement("li");
+        li.classList.add("chat-user-item");
+        li.dataset.userId = String(u.id);
+
+        const infoDiv = document.createElement("div");
+
+        const name = document.createElement("span");
+        name.classList.add("chat-user-name");
+        name.textContent = u.display_name || u.login;
+
+        const idSpan = document.createElement("span");
+        idSpan.classList.add("chat-user-id");
+        idSpan.textContent = `ID: ${u.id}`;
+
+        infoDiv.appendChild(name);
+        infoDiv.appendChild(idSpan);
+
+        if (isSelf) {
+          const selfSpan = document.createElement("span");
+          selfSpan.classList.add("chat-user-self");
+          selfSpan.textContent = "(Вы)";
+          infoDiv.appendChild(selfSpan);
+        }
+
+        li.appendChild(infoDiv);
+
+        const button = document.createElement("button");
+        button.classList.add("remove-user-btn");
+        button.dataset.userId = String(u.id);
+
+        if (isSelf) {
+          button.disabled = true;
+          button.style.opacity = "0.5";
+          button.style.cursor = "not-allowed";
+        }
+
+        button.textContent = "Удалить";
+        li.appendChild(button);
+
+        list.appendChild(li);
+      });
+
+      modalContent.appendChild(list);
 
       const modal = new Modal({
         content: modalContent.outerHTML,
@@ -378,8 +414,8 @@ export class ChatsPage extends Block {
       "input",
       debounce(async (e: Event) => {
         const value = (e.target as HTMLInputElement).value.trim();
+        resultsList.innerHTML = "";
         if (!value) {
-          resultsList.innerHTML = "";
           infoMessage.textContent = "Введите что-нибудь для поиска";
           infoMessage.style.display = "block";
           return;
@@ -387,8 +423,8 @@ export class ChatsPage extends Block {
 
         try {
           const users = await chatsAPI.searchUsers(value);
+          resultsList.innerHTML = "";
           if (!Array.isArray(users) || users.length === 0) {
-            resultsList.innerHTML = "";
             infoMessage.textContent = "Пользователи не найдены";
             infoMessage.style.display = "block";
             return;
@@ -396,72 +432,63 @@ export class ChatsPage extends Block {
 
           infoMessage.style.display = "none";
 
-          resultsList.innerHTML = users
-            .map((u) => {
-              const isInChat = currentUserIds.includes(u.id);
-              const isMe = u.id === this.currentUserId;
-              const buttonLabel = isMe
-                ? "Вы"
-                : isInChat
-                  ? "Удалить"
-                  : "Добавить";
+          users.forEach((u) => {
+            const isInChat = currentUserIds.includes(u.id);
+            const isMe = u.id === this.currentUserId;
+            const buttonLabel = isMe ? "Вы" : isInChat ? "Удалить" : "Добавить";
+            const buttonClass = isMe ? "disabled-btn" : isInChat ? "remove-user-btn" : "add-user-btn";
 
-              const buttonClass = isMe
-                ? "disabled-btn"
-                : isInChat
-                  ? "remove-user-btn"
-                  : "add-user-btn";
+            const li = document.createElement("li");
+            li.classList.add("user-result");
+            li.dataset.id = String(u.id);
 
-              return `
-              <li data-id="${u.id}" class="user-result">
-                <span class="user-result-name">${u.display_name || u.login}</span>
-                <button 
-                  class="${buttonClass}" 
-                  data-id="${u.id}" 
-                  ${isMe ? "disabled" : ""}>
-                  ${buttonLabel}
-                </button>
-              </li>`;
-            })
-            .join("");
+            const nameSpan = document.createElement("span");
+            nameSpan.classList.add("user-result-name");
+            nameSpan.textContent = u.display_name || u.login;
 
-          resultsList.querySelectorAll(".add-user-btn").forEach((btn) => {
-            btn.addEventListener("click", async (ev) => {
-              const id = Number((ev.target as HTMLElement).getAttribute("data-id"));
-              if (this.currentChatId && id) {
-                try {
-                  await chatsAPI.addUsers(this.currentChatId, [id]);
-                  alert("Пользователь добавлен!");
-                  (ev.target as HTMLElement).textContent = "Удалить";
-                  (ev.target as HTMLElement).classList.remove("add-user-btn");
-                  (ev.target as HTMLElement).classList.add("remove-user-btn");
-                  currentUserIds.push(id);
-                } catch (err) {
-                  console.error("Ошибка добавления пользователя:", err);
-                }
-              }
-            });
-          });
+            const button = document.createElement("button");
+            button.classList.add(buttonClass);
+            button.dataset.id = String(u.id);
+            button.textContent = buttonLabel;
+            if (isMe) {
+              button.disabled = true;
+            }
 
-          resultsList.querySelectorAll(".remove-user-btn").forEach((btn) => {
-            btn.addEventListener("click", async (ev) => {
-              const id = Number((ev.target as HTMLElement).getAttribute("data-id"));
-              if (this.currentChatId && id) {
+            button.addEventListener("click", async () => {
+              const id = u.id;
+              if (!this.currentChatId || !id || isMe) return;
+
+              if (currentUserIds.includes(id)) {
                 if (confirm("Удалить пользователя из чата?")) {
                   try {
                     await chatsAPI.removeUsers(this.currentChatId, [id]);
                     alert("Пользователь удалён!");
-                    (ev.target as HTMLElement).textContent = "Добавить";
-                    (ev.target as HTMLElement).classList.remove("remove-user-btn");
-                    (ev.target as HTMLElement).classList.add("add-user-btn");
+                    button.textContent = "Добавить";
+                    button.classList.remove("remove-user-btn");
+                    button.classList.add("add-user-btn");
                     const idx = currentUserIds.indexOf(id);
                     if (idx !== -1) currentUserIds.splice(idx, 1);
                   } catch (err) {
                     console.error("Ошибка удаления пользователя:", err);
                   }
                 }
+              } else {
+                try {
+                  await chatsAPI.addUsers(this.currentChatId, [id]);
+                  alert("Пользователь добавлен!");
+                  button.textContent = "Удалить";
+                  button.classList.remove("add-user-btn");
+                  button.classList.add("remove-user-btn");
+                  currentUserIds.push(id);
+                } catch (err) {
+                  console.error("Ошибка добавления пользователя:", err);
+                }
               }
             });
+
+            li.appendChild(nameSpan);
+            li.appendChild(button);
+            resultsList.appendChild(li);
           });
         } catch (err) {
           console.error("Ошибка поиска:", err);

@@ -70,13 +70,18 @@ export abstract class Block<
     });
 
     const htmlString = template(templateProps);
+
     const temp = document.createElement("template");
-    temp.innerHTML = htmlString.trim();
+    temp.content.appendChild(document.createRange().createContextualFragment(htmlString.trim()));
+
+    const newElement = temp.content.firstElementChild as HTMLElement;
+    if (!newElement) return;
 
     if (!this._element) {
-      this._element = temp.content.firstElementChild as HTMLElement;
+      this._element = newElement;
     } else {
-      this._element.innerHTML = temp.content.firstElementChild!.innerHTML;
+      this._element.replaceWith(newElement);
+      this._element = newElement;
     }
 
     Object.values(newProps || {}).forEach((child) => {
