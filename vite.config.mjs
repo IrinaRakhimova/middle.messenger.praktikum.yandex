@@ -8,6 +8,7 @@ export default defineConfig({
         main: resolve(__dirname, 'index.html'),
       },
     },
+    sourcemap: false,
   },
   css: {
     postcss: './postcss.config.js',
