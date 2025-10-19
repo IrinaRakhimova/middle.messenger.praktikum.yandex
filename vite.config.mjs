@@ -8,13 +8,13 @@ export default defineConfig({
         main: resolve(__dirname, 'index.html'),
       },
     },
-  },
-  css: {
-    postcss: './postcss.config.js',
+    sourcemap: false,
+    target: 'esnext',   
+    minify: 'esbuild',  
   },
   server: {
     port: 3000,
-    host: true
-  }
+    host: true,
+  },
 });
 
