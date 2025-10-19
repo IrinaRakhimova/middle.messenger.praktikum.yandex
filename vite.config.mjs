@@ -9,13 +9,12 @@ export default defineConfig({
       },
     },
     sourcemap: false,
-  },
-  css: {
-    postcss: './postcss.config.js',
+    target: 'esnext',   
+    minify: 'esbuild',  
   },
   server: {
     port: 3000,
-    host: true
-  }
+    host: true,
+  },
 });
 
