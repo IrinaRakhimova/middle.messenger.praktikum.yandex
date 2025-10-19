@@ -5,19 +5,18 @@
 ## 🔗 Демо
 
 Проект задеплоен на Netlify:\
-[**https://your-netlify-site.netlify.app**](https://deploy-preview-3--chat-yandex-irina.netlify.app/)
+[**https://your-netlify-site.netlify.app**](https://chat-yandex-irina.netlify.app)
 
 ---
 
 ## 📄 Ссылки на страницы
 
-- [Главная / Меню](https://deploy-preview-3--chat-yandex-irina.netlify.app/)
-- [Авторизация](https://deploy-preview-3--chat-yandex-irina.netlify.app/login)
-- [Регистрация](https://deploy-preview-3--chat-yandex-irina.netlify.app/register)
-- [Профиль](https://deploy-preview-3--chat-yandex-irina.netlify.app/profile)
-- [Чаты](https://deploy-preview-3--chat-yandex-irina.netlify.app/chats)
-- [404](https://deploy-preview-3--chat-yandex-irina.netlify.app/404)
-- [500](https://deploy-preview-3--chat-yandex-irina.netlify.app/500)
+- [Авторизация](https://chat-yandex-irina.netlify.app/login)
+- [Регистрация](https://chat-yandex-irina.netlify.app/register)
+- [Профиль](https://chat-yandex-irina.netlify.app/profile)
+- [Чаты](https://chat-yandex-irina.netlify.app/chats)
+- [404](https://chat-yandex-irina.netlify.app/404)
+- [500](https://chat-yandex-irina.netlify.app/500)
 
 ---
 
@@ -93,4 +92,5 @@ npm run lint:css   # Stylelint
 npm run type-check # Проверка типов (tsc --noEmit)
 npm run check      # Линт + проверка типов
 ```
+
 
