@@ -6,4 +6,3 @@ export { ProfilePage } from "./profile/ProfilePage";
 export { ProfileEditPage } from "./profile-edit/ProfileEditPage";
 export { RegisterPage } from './register/RegisterPage';
 export { PasswordEditPage } from "./password-edit/PasswordEditPage";
-export { HomePage } from "./home/HomePage";

@@ -1,7 +1,7 @@
 .floating-form {
-  max-width: 400px;
   display: flex;
   flex-direction: column;
+  width: 1000px;
 }
 
 .container {
@@ -12,8 +12,7 @@
 }
 
 .card {
-  width: 340px;
-  height: 615px;
+  height: 800px;
   background: rgba(255, 255, 255, 1);
   box-shadow: 0px 0px 6px 0px rgba(0, 0, 0, 0.14);
   display: flex;
@@ -56,3 +55,8 @@ p {
   line-height: 11px;
   color: rgba(51, 105, 243, 1);
 }
+
+.back {
+  text-align: left;
+}
+

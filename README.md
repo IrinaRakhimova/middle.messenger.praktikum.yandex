@@ -1,23 +1,22 @@
-# Messenger App — Sprint 2
+# Messenger App — Sprint 3
 
-Проектная работа в рамках 2-го спринта курса «Мидл фронтенд-разработчик» от Яндекс.Практикума.
+Проектная работа в рамках 3-го спринта курса «Мидл фронтенд-разработчик» от Яндекс.Практикума.
 
 ## 🔗 Демо
 
 Проект задеплоен на Netlify:\
-[**https://your-netlify-site.netlify.app**](https://deploy-preview-3--chat-yandex-irina.netlify.app/)
+[**https://your-netlify-site.netlify.app**](https://chat-yandex-irina.netlify.app)
 
 ---
 
 ## 📄 Ссылки на страницы
 
-- [Главная / Меню](https://deploy-preview-3--chat-yandex-irina.netlify.app/)
-- [Авторизация](https://deploy-preview-3--chat-yandex-irina.netlify.app/login)
-- [Регистрация](https://deploy-preview-3--chat-yandex-irina.netlify.app/register)
-- [Профиль](https://deploy-preview-3--chat-yandex-irina.netlify.app/profile)
-- [Чаты](https://deploy-preview-3--chat-yandex-irina.netlify.app/chats)
-- [404](https://deploy-preview-3--chat-yandex-irina.netlify.app/404)
-- [500](https://deploy-preview-3--chat-yandex-irina.netlify.app/500)
+- [Авторизация](https://chat-yandex-irina.netlify.app/login)
+- [Регистрация](https://chat-yandex-irina.netlify.app/register)
+- [Профиль](https://chat-yandex-irina.netlify.app/profile)
+- [Чаты](https://chat-yandex-irina.netlify.app/chats)
+- [404](https://chat-yandex-irina.netlify.app/404)
+- [500](https://chat-yandex-irina.netlify.app/500)
 
 ---
 
@@ -36,6 +35,7 @@
 - HTML / CSS
 - JavaScript (ESModules)
 - XHR (без fetch/axios)
+- WebSocket (для real-time сообщений)
 - Netlify
 - ESLint + Stylelint + EditorConfig
 
@@ -44,21 +44,38 @@
 ## 🔹 Страницы
 
 ### 📅 Логин
-
-- `login`
-- `password`
+- login, password
+- Авторизация пользователя
+- Проверка авторизации и редирект неавторизованных пользователей на страницу логина
 
 ### 📅 Регистрация
-
-- `first_name`, `second_name`, `login`, `email`, `password`, `phone`
+- first_name, second_name, login, email, password, phone
+- После успешной регистрации — переход на страницу чатов
+- Используются только тестовые данные
 
 ### 💬 Чаты
-
-- `message`
+- Список чатов пользователя
+- Создание нового чата
+- Добавление и удаление пользователей из чата
+- Работа с real-time сообщениями через WebSocket
 
 ### 👤 Профиль
+- first_name, second_name, display_name, login, email, phone, avatar, oldPassword, newPassword
+- Возможность изменять данные пользователя, аватар и пароль
 
-- `first_name`, `second_name`, `display_name`, `login`, `email`, `phone`, `avatar`, `oldPassword`, `newPassword`
+### 🌐 Роутинг
+- `/` — главная страница 
+- `/chats` — чат 
+- `/register` — страница регистрации
+- `/login` — страница входа
+- `/profile` — настройки профиля 
+- `/profile-edit` — редактирование профиля
+- `/password-edit` — редактирование пароля
+- `/500` — ошибка сервера
+- `/404` — страница не найдена  
+- Поддержка навигации «Назад» и «Вперёд»  
+- Поддержка переходов по кнопкам в интерфейсе  
+- При обновлении страницы URL сохраняет текущую страницу  
 
 ---
 
@@ -76,8 +93,4 @@ npm run type-check # Проверка типов (tsc --noEmit)
 npm run check      # Линт + проверка типов
 ```
 
----
-
-## 👨‍💻 Автор
-Ирина Рахимова — студент Практикума
 

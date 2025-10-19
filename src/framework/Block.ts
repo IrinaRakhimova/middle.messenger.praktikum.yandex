@@ -1,15 +1,21 @@
-import Handlebars from 'handlebars';
-import { EventBus } from './EventBus';
+import Handlebars from "handlebars";
+import { EventBus } from "./EventBus";
 
 type BlockEvents = {
   init: [];
-  'flow:render': [];
+  "flow:render": [];
+  "flow:props-changed": [oldProps: any, newProps: any];
 };
 
-export abstract class Block<TProps extends Record<string, unknown> = Record<string, unknown>> {
+let _idCounter = 0;
+
+export abstract class Block<
+  TProps extends Record<string, unknown> = Record<string, unknown>
+> {
   static EVENTS = {
-    INIT: 'init',
-    FLOW_RENDER: 'flow:render',
+    INIT: "init",
+    FLOW_RENDER: "flow:render",
+    FLOW_PROPS_CHANGED: "flow:props-changed",
   } as const;
 
   private _element: HTMLElement | null = null;
@@ -22,7 +28,10 @@ export abstract class Block<TProps extends Record<string, unknown> = Record<stri
     listener: EventListenerOrEventListenerObject;
   }> = [];
 
+  private _id: number;
+
   constructor(props: TProps) {
+    this._id = _idCounter++;
     this.props = props;
     this.eventBus = new EventBus<BlockEvents>();
     this.registerEvents();
@@ -31,22 +40,76 @@ export abstract class Block<TProps extends Record<string, unknown> = Record<stri
 
   private registerEvents(): void {
     this.eventBus.on(Block.EVENTS.INIT, this.init.bind(this));
-    this.eventBus.on(Block.EVENTS.FLOW_RENDER, this._render.bind(this));
+    this.eventBus.on(Block.EVENTS.FLOW_PROPS_CHANGED, this._render.bind(this));
   }
 
   private init(): void {
-    this.eventBus.emit(Block.EVENTS.FLOW_RENDER);
+    this.eventBus.emit(Block.EVENTS.FLOW_PROPS_CHANGED, {}, this.props);
   }
 
-  private _render(): void {
+  public get id(): number {
+    return this._id;
+  }
+
+  private _render(oldProps: any, newProps: any): void {
+    if (this._element && !this.shouldComponentUpdate(oldProps, newProps)) {
+      return;
+    }
+
     this.removeEventListeners();
 
     const template = Handlebars.compile(this.render());
-    const htmlString = template(this.props);
-    const temp = document.createElement('template');
-    temp.innerHTML = htmlString.trim();
-    this._element = temp.content.firstElementChild as HTMLElement;
+
+    const templateProps: Record<string, unknown> = {};
+    Object.entries(newProps || {}).forEach(([key, value]) => {
+      if (value instanceof Block) {
+        templateProps[key] = `<div data-block-id="${value.id}"></div>`;
+      } else {
+        templateProps[key] = value;
+      }
+    });
+
+    const htmlString = template(templateProps);
+
+    const temp = document.createElement("template");
+    temp.content.appendChild(document.createRange().createContextualFragment(htmlString.trim()));
+
+    const newElement = temp.content.firstElementChild as HTMLElement;
+    if (!newElement) return;
+
+    if (!this._element) {
+      this._element = newElement;
+    } else {
+      this._element.replaceWith(newElement);
+      this._element = newElement;
+    }
+
+    Object.values(newProps || {}).forEach((child) => {
+      if (child instanceof Block) {
+        const placeholder = this._element?.querySelector(
+          `[data-block-id="${child.id}"]`
+        );
+        if (placeholder) {
+          const childContent = child.getContent();
+          if (childContent) {
+            placeholder.replaceWith(childContent);
+            child.afterRender();
+          }
+        }
+      }
+    });
+
     this.afterRender();
+  }
+
+  protected getChildren(): Record<string, Block> {
+    const children: Record<string, Block> = {};
+    Object.entries(this.props).forEach(([key, value]) => {
+      if (value instanceof Block) {
+        children[key] = value;
+      }
+    });
+    return children;
   }
 
   public getContent(): HTMLElement | null {
@@ -55,7 +118,7 @@ export abstract class Block<TProps extends Record<string, unknown> = Record<stri
 
   protected abstract render(): string;
 
-  public afterRender(): void {}
+  public afterRender(): void { }
 
   protected addEventListener<K extends keyof HTMLElementEventMap>(
     element: Element,
@@ -73,11 +136,48 @@ export abstract class Block<TProps extends Record<string, unknown> = Record<stri
     this._listeners = [];
   }
 
-  protected componentWillUnmount(): void {}
+  protected componentWillUnmount(): void { }
 
   public destroy(): void {
     this.componentWillUnmount();
     this.removeEventListeners();
+
+    Object.values(this.getChildren()).forEach((child) => child.destroy());
+
     this._element = null;
+  }
+
+  public setProps(nextProps: Partial<TProps>): void {
+    if (!nextProps) return;
+    const oldProps = { ...this.props };
+    this.props = { ...this.props, ...nextProps };
+    this.eventBus.emit(Block.EVENTS.FLOW_PROPS_CHANGED, oldProps, this.props);
+  }
+
+  public hide(): void {
+    const el = this.getContent();
+    if (el) el.style.display = "none";
+  }
+
+  public show(): void {
+    const el = this.getContent();
+    if (el) el.style.display = "";
+  }
+
+  protected shouldComponentUpdate(oldProps: TProps, newProps: TProps): boolean {
+    const oldKeys = Object.keys(oldProps);
+    const newKeys = Object.keys(newProps);
+
+    if (oldKeys.length !== newKeys.length) {
+      return true;
+    }
+
+    for (const key of oldKeys) {
+      if (!(oldProps[key] instanceof Block) && oldProps[key] !== newProps[key]) {
+        return true;
+      }
+    }
+
+    return false;
   }
 }

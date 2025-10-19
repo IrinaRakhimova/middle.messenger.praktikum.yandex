@@ -1,6 +1,7 @@
 type ValidationResult = { valid: boolean; error?: string };
 
 export function validateField(name: string, value: string): ValidationResult {
+  console.log(`Validating "${name}" with value "${value}"`);
   const rules: Record<string, RegExp> = {
     first_name: /^[А-ЯЁA-Z][а-яёa-zА-ЯЁA-Z-]*$/,
     second_name: /^[А-ЯЁA-Z][а-яёa-zА-ЯЁA-Z-]*$/,
@@ -8,7 +9,7 @@ export function validateField(name: string, value: string): ValidationResult {
     email: /^[a-zA-Z0-9._-]+@[a-zA-Z]+\.[a-zA-Z]+$/,
     password: /^(?=.*[A-Z])(?=.*\d).{8,40}$/,
     phone: /^\+?\d{10,15}$/,
-    message: /.+/,
+    message: /^(?!\s*$).+$/,
     oldPassword: /^(?=.*[A-Z])(?=.*\d).{8,40}$/,
     newPassword: /^(?=.*[A-Z])(?=.*\d).{8,40}$/,
   };

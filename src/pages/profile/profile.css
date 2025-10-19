@@ -120,3 +120,7 @@ li {
 .back {
   text-align: left;
 }
+
+.profile-info-text {
+  margin: 0;
+}

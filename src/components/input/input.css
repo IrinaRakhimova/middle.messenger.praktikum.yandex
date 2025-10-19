@@ -1,6 +1,8 @@
 .input-group {
   position: relative;
   margin-bottom: 1rem;
+  width: 70%;
+  overflow: hidden;
 }
 
 .input-group input {
@@ -8,9 +10,10 @@
   font-weight: 500;
   font-size: 13px;
   line-height: 13px;
-  text-align: right;
+  text-align: left;
   width: 100%;
   padding: 1rem 0.5rem 0.5rem;
+  border: none;
   border-bottom: 1px solid rgba(51, 105, 243, 1);
   background: transparent;
   outline: none;
@@ -27,8 +30,8 @@
   transition: 0.2s ease all;
 }
 
-.input-group input:focus + label,
-.input-group input:not(:placeholder-shown):valid + label {
+.input-group input:focus+label,
+.input-group input:not(:placeholder-shown):valid+label {
   top: 0.2rem;
   left: 0.5rem;
   font-size: 0.75rem;
@@ -39,3 +42,12 @@ input:invalid {
   border-color: red;
 }
 
+.error-message {
+  font-family: Inter, sans-serif;
+  font-size: 11px;
+  line-height: 13px;
+  color: #e53935;
+  min-height: 14px;
+  margin-top: 2px;
+  padding-left: 2px;
+}

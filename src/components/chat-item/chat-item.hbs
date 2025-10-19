@@ -1,4 +1,4 @@
-<li class="chat-item {{#if unread}}has-unread{{/if}}">
+<li class="chat-item {{#if unread}}has-unread{{/if}}" data-id="{{id}}">
   <div class="chat-preview">
     <div class="avatar-placeholder"></div>
     <div class="chat-text">
@@ -9,7 +9,7 @@
       <div class="chat-last-unread">
         <span class="chat-last">{{lastMessage}}</span>
         {{#if unread}}
-          <span class="unread-count">{{unread}}</span>
+        <span class="unread-count">{{unread}}</span>
         {{/if}}
       </div>
     </div>
