@@ -7,12 +7,13 @@ import Router from "../../utils/Router";
 import { Routes } from "../../main";
 import { store, StoreEvents } from "../../store/Store";
 import { userAPI } from "../../api/userAPI";
+import { BASE_URL } from "../../utils/constants";
 
 export class ProfilePage extends Block {
   private boundOnStoreUpdate: () => void;
 
   constructor() {
-    const AVATAR_BASE_URL = "https://ya-praktikum.tech/api/v2/resources";
+    const AVATAR_BASE_URL = `${BASE_URL}/resources`;
     const user = store.getState().user;
 
     console.log("[ProfilePage] constructor called. user =", user);
@@ -68,7 +69,7 @@ export class ProfilePage extends Block {
     const user = store.getState().user;
     console.log("[ProfilePage] onStoreUpdate called. user =", user);
 
-    const AVATAR_BASE_URL = "https://ya-praktikum.tech/api/v2/resources";
+    const AVATAR_BASE_URL = `${BASE_URL}/resources`;
     const avatarUrl = user?.avatar
       ? `${AVATAR_BASE_URL}${user.avatar}`
       : "/Avatar.png";

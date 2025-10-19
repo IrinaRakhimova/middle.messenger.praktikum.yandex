@@ -9,6 +9,7 @@ import Router from "../../utils/Router";
 import { Routes } from "../../main";
 import { userAPI, UserUpdateRequest } from "../../api/userAPI";
 import { authAPI } from "../../api/authAPI";
+import { BASE_URL } from "../../utils/constants";
 
 export class ProfileEditPage extends Block {
   private emailInput: Input;
@@ -27,7 +28,7 @@ export class ProfileEditPage extends Block {
       return;
     }
 
-    const AVATAR_BASE_URL = "https://ya-praktikum.tech/api/v2/resources";
+    const AVATAR_BASE_URL = `${BASE_URL}/resources`;
     const avatarUrl = user.avatar
       ? `${AVATAR_BASE_URL}${user.avatar}`
       : "/Avatar.png";
@@ -151,7 +152,7 @@ export class ProfileEditPage extends Block {
             ".avatar-image"
           );
           if (avatarImg) {
-            const baseUrl = "https://ya-praktikum.tech/api/v2/resources";
+            const baseUrl = `${BASE_URL}/resources`;
             avatarImg.src = updatedUser.avatar
               ? `${baseUrl}${updatedUser.avatar}`
               : "/Avatar.png";

@@ -8,6 +8,7 @@ import { MessageBubble } from "../../components/message-bubble/message-bubble";
 import "./chats.css";
 import { ChatWebSocket } from "../../api/chatWebSocket";
 import { chatsAPI } from "../../api/chatsAPI";
+import { BASE_URL } from "../../utils/constants";
 
 
 type ChatMessage = {
@@ -67,7 +68,7 @@ export class ChatsPage extends Block {
 
   private async loadChats(): Promise<void> {
     try {
-      const res = await fetch("https://ya-praktikum.tech/api/v2/chats", {
+      const res = await fetch(`${BASE_URL}/chats`, {
         method: "GET",
         credentials: "include",
       });
@@ -124,13 +125,13 @@ export class ChatsPage extends Block {
       }
     });
 
-    const meRes = await fetch("https://ya-praktikum.tech/api/v2/auth/user", {
+    const meRes = await fetch(`${BASE_URL}/auth/user`, {
       credentials: "include",
     });
     const me = await meRes.json();
     this.currentUserId = me.id;
 
-    const tokenRes = await fetch(`https://ya-praktikum.tech/api/v2/chats/token/${chatId}`, {
+    const tokenRes = await fetch(`${BASE_URL}/chats/token/${chatId}`, {
       method: "POST",
       credentials: "include",
     });
@@ -270,7 +271,7 @@ export class ChatsPage extends Block {
       const users = await chatsAPI.getChatUsers(chatId);
 
       if (!this.currentUserId) {
-        const meRes = await fetch("https://ya-praktikum.tech/api/v2/auth/user", {
+        const meRes = await fetch(`${BASE_URL}/auth/user`, {
           credentials: "include",
         });
         const me = await meRes.json();
@@ -523,7 +524,7 @@ export class ChatsPage extends Block {
         const title = inputEl?.value.trim();
         if (!title) return;
 
-        await fetch("https://ya-praktikum.tech/api/v2/chats", {
+        await fetch(`${BASE_URL}/chats`, {
           method: "POST",
           credentials: "include",
           headers: { "Content-Type": "application/json" },

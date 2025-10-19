@@ -1,6 +1,7 @@
 import { HTTPTransport } from "./HTTPTransport";
+import { BASE_URL } from "../utils/constants";
 
-const chatAPIInstance = new HTTPTransport("https://ya-praktikum.tech/api/v2");
+const chatAPIInstance = new HTTPTransport(`${BASE_URL}`);
 
 export type Chat = {
   id: number;

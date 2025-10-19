@@ -1,8 +1,9 @@
 import { HTTPTransport } from "./HTTPTransport";
 import { UserResponse } from "./authAPI";
+import { BASE_URL } from "../utils/constants";
 
 const userAPIInstance = new HTTPTransport(
-  "https://ya-praktikum.tech/api/v2/user"
+  `${BASE_URL}/user`
 );
 
 export type UserUpdateRequest = {
